@@ -21,3 +21,6 @@ infixl:55 "⋀" => conjunction --input with \ bigvee
 infixl:55 "⋁" => disjunction --input with \ bigwedge
 infixr:50 "⟹" => implication --input with \ ==>
 
+abbrev negation (A) := A ⟹ falsum
+
+prefix:max "∼" => negation --input with \ ~
