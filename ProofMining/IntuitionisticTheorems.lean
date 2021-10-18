@@ -61,10 +61,12 @@ theorem t28a (A B : Formula) : Γ ⊢ (((A ⟹ B) ⟹ falsum) ⟹ falsum) ⟹ ((
 theorem t28b (A B : Formula) : Γ ⊢ (((A ⟹ falsum) ⟹ falsum) ⟹ ((B ⟹ falsum) ⟹ falsum)) ⟹ (((A ⟹ B) ⟹ falsum) ⟹ falsum) :=
   sorry
 
-theorem t29a (A B : Formula) : Γ ⊢ (A ⟹ ((B ⟹ falsum) ⟹ falsum)) ⟹ (((A ⟹ falsum) ⟹ falsum) ⟹ (B ⟹ falsum)) :=
-  sorry
+theorem t29a (A B : Formula) : Γ ⊢ (A ⟹ (B ⟹ falsum)) ⟹ (((A ⟹ falsum) ⟹ falsum) ⟹ (B ⟹ falsum)) :=
+  let p₁ : Γ ⊢ (A ⟹ (B ⟹ falsum)) ⟹ (((A ⟹ falsum) ⟹ falsum) ⟹ (((B ⟹ falsum) ⟹ falsum) ⟹ falsum)) := syllogism (t24 _) (t28a _ _)
+  let p₂ : Γ ⊢ (((A ⟹ falsum) ⟹ falsum) ⟹ (((B ⟹ falsum) ⟹ falsum) ⟹ falsum)) ⟹ (((A ⟹ falsum) ⟹ falsum) ⟹ (B ⟹ falsum)) := exportation (syllogism (importation (t21 _)) (t26b _))
+  syllogism p₁ p₂
 
-theorem t29b (A B : Formula) : Γ ⊢ (((A ⟹ falsum) ⟹ falsum) ⟹ (B ⟹ falsum)) ⟹ (A ⟹ ((B ⟹ falsum) ⟹ falsum)) :=
+theorem t29b (A B : Formula) : Γ ⊢ (((A ⟹ falsum) ⟹ falsum) ⟹ (B ⟹ falsum)) ⟹ (A ⟹ (B ⟹ falsum)) :=
   sorry
 
 theorem t30a (A B : Formula) : Γ ⊢ (((A ⋀ B) ⟹ falsum) ⟹ falsum) ⟹ (((A ⟹ falsum) ⟹ falsum) ⋀ ((B ⟹ falsum) ⟹ falsum)) :=
@@ -83,7 +85,7 @@ theorem t32b (A B : Formula) : Γ ⊢ (((A ⟹ falsum) ⋀ (B ⟹ falsum)) ⟹ f
   sorry
 
 theorem t33a (A B : Formula) : Γ ⊢ ((A ⋀ B) ⟹ falsum) ⟹ A ⟹ (B ⟹ falsum) :=
-  let p₁ : Γ ⊢ (A ⋀ B) ⟹ ((A ⋀ B) ⟹ falsum)  ⟹ falsum := t24 _
+  let p₁ : Γ ⊢ A ⟹ B ⟹ ((A ⋀ B) ⟹ falsum)  ⟹ falsum := exportation (t24 _)
   sorry
 
 theorem t33b (A B : Formula) : Γ ⊢ (A ⟹ (B ⟹ falsum)) ⟹ ((A ⋀ B) ⟹ falsum) :=
@@ -107,4 +109,9 @@ theorem t40a (A B : Formula) : Γ ⊢ ((A ⋁ B) ⟹ falsum) ⟹ ((A ⟹ falsum)
   r45 p₁ p₂
 
 theorem t40b (A B : Formula) : Γ ⊢ ((A ⟹ falsum) ⋀ (B ⟹ falsum)) ⟹ ((A ⋁ B) ⟹ falsum) :=
-  sorry
+  let p₁ : Γ ⊢ A ⟹ (A ⟹ falsum) ⟹ ((B ⟹ falsum) ⟹ falsum) := exportation (syllogism (permConj _ _) (t18 _ _))
+  let p₂ : Γ ⊢ B ⟹ (A ⟹ falsum) ⟹ ((B ⟹ falsum) ⟹ falsum) := exportation (syllogism (permConj _ _) (importation (r44 (t24 _))))
+  let p₃ : Γ ⊢ A ⋁ B ⟹ (A ⟹ falsum) ⟹ ((B ⟹ falsum) ⟹ falsum) := r49 p₁ p₂
+  let p₄ : Γ ⊢ ((A ⟹ falsum) ⟹ ((B ⟹ falsum) ⟹ falsum)) ⟹ ((A ⟹ falsum) ⋀ (B ⟹ falsum) ⟹ falsum) := t33b _ _
+  let p₅ : Γ ⊢ A ⋁ B ⟹ ((A ⟹ falsum) ⋀ (B ⟹ falsum) ⟹ falsum) := syllogism p₃ p₄
+  exportation (syllogism (permConj _ _) (importation p₅))
