@@ -17,8 +17,8 @@ inductive Proof (Γ : List Formula) : Formula →  Type
 | contrDisj (A : Formula) : Proof Γ (A ⋁ A ⟹ A)
 | weakConj (A B : Formula) : Proof Γ (A ⋀ B ⟹ A)
 | weakDisj (A B : Formula) : Proof Γ (A ⟹ A ⋁ B)
-| permConj (A B C : Formula) : Proof Γ (A ⋀ B ⟹ B ⋀ A)
-| permDisj (A B C : Formula) : Proof Γ (A ⋁ B ⟹ B ⋁ A)
+| permConj (A B : Formula) : Proof Γ (A ⋀ B ⟹ B ⋀ A)
+| permDisj (A B : Formula) : Proof Γ (A ⋁ B ⟹ B ⋁ A)
 | exFalso (A : Formula) : Proof Γ (falsum ⟹ A)
 | mpon {A B : Formula} : Proof Γ A → Proof Γ (A ⟹ B) → Proof Γ B
 | syllogism {A B C : Formula} : Proof Γ (A ⟹ B) → Proof Γ (B ⟹ C) → Proof Γ (A ⟹ C)
