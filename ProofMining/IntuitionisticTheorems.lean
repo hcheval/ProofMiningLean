@@ -52,6 +52,14 @@ theorem t28a (A B : Formula) : Γ ⊢ ∼∼(A ⟹ B) ⟹ (∼∼A ⟹ ∼∼B) 
   sorry
 
 theorem t28b (A B : Formula) : Γ ⊢ (∼∼A ⟹ ∼∼B) ⟹ ∼∼(A ⟹ B) :=
+  let p₁ : Γ ⊢ (A ⟹ B) ⟹ ∼∼A ⟹ (A ⟹ B) := t23 _ _
+  let p₂ : Γ ⊢ (A ⟹ B) ⋀ ∼∼A ⋀ A ⟹ ∼∼B := syllogism (importation (importation p₁)) (t24 B)
+  let p₃ : Γ ⊢ (A ⟹ B) ⋀ ∼∼A ⟹ (A ⟹ B) ⋀ ∼∼A ⋀ A := sorry
+  let p₄ : Γ ⊢ (A ⟹ B) ⋀ ∼∼A ⟹ ∼∼B := syllogism p₃ p₂
+  -- let p₅ (h₁: Γ ⊢ A ⟹ B) : Γ ⊢ ∼A ⟹ ∼B := sorry
+
+  let p₆ : Γ ⊢ (A ⟹ B) ⟹ (∼∼A ⟹ ∼∼B) := exportation p₄
+  let p₇ : Γ ⊢ ∼(A ⟹ B) ⟹ ∼(∼∼A ⟹ ∼∼B) := sorry
   sorry
 
 theorem t27a (A B : Formula) : Γ ⊢ ∼∼(A ⟹ B) ⟹ (A ⟹ ∼∼B) :=
