@@ -40,14 +40,13 @@ theorem t24 (A : Formula) : Γ ⊢ (A ⟹ ∼∼A) :=
   let p₂ : Γ ⊢ ∼(A ⋀ ∼A) := syllogism p₁ (t18 A falsum)
   exportation p₂
 
-theorem t25 (A : Formula) : Γ ⊢ ∼∼(A ⋁ ∼A) := 
-  sorry
-
-theorem t26a (A : Formula) : Γ ⊢ ∼A ⟹ ∼∼∼A:=
+theorem t26a (A : Formula) : Γ ⊢ ∼A ⟹ ∼∼∼A :=
   t24 ∼A
 
 theorem t26b (A : Formula) : Γ ⊢ ∼∼∼A ⟹ ∼A :=
-  sorry
+  let p₁ : Γ ⊢ A ⟹ ∼∼∼∼A := syllogism (t24 _) (t24 _)
+  let p₂ : Γ ⊢ ∼∼∼A ⋀ A ⟹ falsum := syllogism (permConj _ _) (importation p₁)
+  exportation p₂
 
 theorem t27a (A B : Formula) : Γ ⊢ ∼∼(A ⟹ B) ⟹ (A ⟹ ∼∼B) :=
   sorry
@@ -81,11 +80,16 @@ theorem t31 (A B : Formula) : Γ ⊢ ∼∼ (A ⋁ B) ⟹ ∼∼A ⟹ ∼∼B :=
 theorem t32a (A B : Formula) : Γ ⊢ ∼∼ (A ⋁ B) ⟹ ∼∼(∼A ⋀ ∼B) :=
   sorry
 
-theorem t32b (A B : Formula) : Γ ⊢ ∼∼(∼A ⋀ ∼B) ⟹ ∼∼(A ⋁ B) :=
+theorem t32b (A B : Formula) : Γ ⊢ ∼(∼A ⋀ ∼B) ⟹ ∼∼(A ⋁ B) :=
   sorry
 
+theorem t25 (A : Formula) : Γ ⊢ ∼∼(A ⋁ ∼A) := 
+  let p₁ : Γ ⊢ ∼(∼A ⋀ ∼∼A) := syllogism (permConj _ _) (t18 _ _)
+  mpon p₁ (t32b _ _)
+
 theorem t33a (A B : Formula) : Γ ⊢ ∼(A ⋀ B) ⟹ A ⟹ ∼B :=
-  let p₁ : Γ ⊢ A ⟹ B ⟹ ∼∼(A ⋀ B) := exportation (t24 _)
+  let p₁ : Γ ⊢ ∼(A ⋀ B) ⋀ (A ⋀ B) ⟹ falsum := t18 _ _
+  let p₂ : Γ ⊢ (B ⟹ ∼∼(A ⋀ B)) ⟹ ∼(A ⋀ B) ⟹ ∼B := sorry
   sorry
 
 theorem t33b (A B : Formula) : Γ ⊢ (A ⟹ ∼B) ⟹ ∼(A ⋀ B) :=
