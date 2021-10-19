@@ -48,16 +48,21 @@ theorem t26b (A : Formula) : Γ ⊢ ∼∼∼A ⟹ ∼A :=
   let p₂ : Γ ⊢ ∼∼∼A ⋀ A ⟹ falsum := syllogism (permConj _ _) (importation p₁)
   exportation p₂
 
-theorem t27a (A B : Formula) : Γ ⊢ ∼∼(A ⟹ B) ⟹ (A ⟹ ∼∼B) :=
-  sorry
-
-theorem t27b (A B : Formula) : Γ ⊢ (A ⟹ ∼∼B) ⟹ ∼∼(A ⟹ B) :=
-  sorry
-
 theorem t28a (A B : Formula) : Γ ⊢ ∼∼(A ⟹ B) ⟹ (∼∼A ⟹ ∼∼B) :=
   sorry
 
 theorem t28b (A B : Formula) : Γ ⊢ (∼∼A ⟹ ∼∼B) ⟹ ∼∼(A ⟹ B) :=
+  sorry
+
+theorem t27a (A B : Formula) : Γ ⊢ ∼∼(A ⟹ B) ⟹ (A ⟹ ∼∼B) :=
+  let p₀ : Γ ⊢ (∼∼(A ⟹ B)) ⋀ ∼∼A ⟹ ∼∼B := importation (t28a _ _)
+  let p₁ : Γ ⊢ ∼∼A ⋀ (∼∼(A ⟹ B)) ⟹ (∼∼(A ⟹ B)) ⋀ ∼∼A := permConj _ _
+  let p₂ : Γ ⊢ ∼∼A ⋀ (∼∼(A ⟹ B)) ⟹ ∼∼B := syllogism p₁ p₀
+  let p₃ : Γ ⊢ ∼∼A ⟹ ∼∼(A ⟹ B) ⟹ ∼∼B := exportation p₂
+  let p₄ : Γ ⊢ A ⟹ ∼∼(A ⟹ B) ⟹ ∼∼B := syllogism (t24 _) p₃
+  exportation (syllogism (permConj _ _) (importation p₄))
+
+theorem t27b (A B : Formula) : Γ ⊢ (A ⟹ ∼∼B) ⟹ ∼∼(A ⟹ B) :=
   sorry
 
 theorem t29a (A B : Formula) : Γ ⊢ (A ⟹ ∼B) ⟹ (∼∼A ⟹ ∼B) :=
@@ -74,10 +79,10 @@ theorem t30a (A B : Formula) : Γ ⊢ ∼∼(A ⋀ B) ⟹ (∼∼A ⋀ ∼∼B) 
 theorem t30b (A B : Formula) : Γ ⊢ (∼∼A ⋀ ∼∼B) ⟹ ∼∼(A ⋀ B) :=
   sorry
 
-theorem t31 (A B : Formula) : Γ ⊢ ∼∼ (A ⋁ B) ⟹ ∼∼A ⟹ ∼∼B :=
+theorem t31 (A B : Formula) : Γ ⊢ ∼∼(A ⋁ B) ⟹ ∼∼A ⟹ ∼∼B :=
   sorry
 
-theorem t32a (A B : Formula) : Γ ⊢ ∼∼ (A ⋁ B) ⟹ ∼∼(∼A ⋀ ∼B) :=
+theorem t32a (A B : Formula) : Γ ⊢ ∼∼(A ⋁ B) ⟹ ∼∼(∼A ⋀ ∼B) :=
   sorry
 
 theorem t32b (A B : Formula) : Γ ⊢ ∼(∼A ⋀ ∼B) ⟹ ∼∼(A ⋁ B) :=
