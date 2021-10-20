@@ -2,6 +2,7 @@
 inductive FiniteType where
 | zero : FiniteType
 | application : FiniteType → FiniteType → FiniteType
+deriving Repr
 
 namespace FiniteType
 
@@ -18,7 +19,17 @@ end FiniteType
 inductive PureFiniteType where
 | zero : PureFiniteType
 | application : PureFiniteType → PureFiniteType
+deriving Repr
 
 def transfrom : PureFiniteType → FiniteType
  | PureFiniteType.zero => FiniteType.zero
  | PureFiniteType.application ρ => (transfrom ρ) ↣ FiniteType.zero
+
+#eval transfrom (PureFiniteType.application (PureFiniteType.application PureFiniteType.zero))
+
+def getPFT (n : Nat) : PureFiniteType :=
+  match n with
+    | Nat.zero => PureFiniteType.zero
+    | Nat.succ n => PureFiniteType.application (getPFT n)
+
+#eval getPFT 2
