@@ -4,17 +4,13 @@ inductive FiniteType where
 | application : FiniteType → FiniteType → FiniteType
 deriving Repr
 
-namespace FiniteType
+infixl:60 "↣" => FiniteType.application
 
-infixl:60 "↣" => application
-
-def deg : FiniteType -> Nat
+def FiniteType.deg : FiniteType → Nat
   | FiniteType.zero => 0
   | FiniteType.application ρ τ => Nat.max (deg τ) ((deg ρ) + 1)
 
 #eval FiniteType.deg (FiniteType.zero ↣ FiniteType.zero ↣ FiniteType.zero ↣ FiniteType.zero)
-
-end FiniteType
 
 inductive PureFiniteType where
 | zero : PureFiniteType
@@ -33,3 +29,5 @@ def getPFT (n : Nat) : PureFiniteType :=
     | Nat.succ n => PureFiniteType.application (getPFT n)
 
 #eval getPFT 2
+
+example (n : Nat) : FiniteType.deg (transfrom (getPFT n)) = n := sorry
