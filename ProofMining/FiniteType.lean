@@ -4,7 +4,7 @@ inductive FiniteType where
 | application : FiniteType → FiniteType → FiniteType
 deriving Repr
 
-infixl:60 "↣" => FiniteType.application
+infixr:60 "↣" => FiniteType.application
 
 def FiniteType.deg : FiniteType → Nat
   | FiniteType.zero => 0
@@ -30,4 +30,12 @@ def getPFT (n : Nat) : PureFiniteType :=
 
 #eval getPFT 2
 
-example (n : Nat) : FiniteType.deg (transfrom (getPFT n)) = n := sorry
+example (n : Nat) : FiniteType.deg (transfrom (getPFT n)) = n := 
+  Nat.recOn (motive := fun x => FiniteType.deg (transfrom (getPFT x)) = x)
+    n
+    (show 0 + 0 = 0 from rfl)
+    (fun (n : Nat) (ih : 0 + n = n) =>
+      show FiniteType.deg (transfrom (getPFT (Nat.succ n))) = Nat.succ n from
+      calc
+        0 + Nat.succ n = Nat.succ (0 + n) := rfl
+                  _ = Nat.succ n       := by rw [ih])
