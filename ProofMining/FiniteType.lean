@@ -17,11 +17,11 @@ inductive PureFiniteType where
 | application : PureFiniteType → PureFiniteType
 deriving Repr
 
-def transfrom : PureFiniteType → FiniteType
+def transform : PureFiniteType → FiniteType
  | PureFiniteType.zero => FiniteType.zero
- | PureFiniteType.application ρ => (transfrom ρ) ↣ FiniteType.zero
+ | PureFiniteType.application ρ => (transform ρ) ↣ FiniteType.zero
 
-#eval transfrom (PureFiniteType.application (PureFiniteType.application PureFiniteType.zero))
+#eval transform (PureFiniteType.application (PureFiniteType.application PureFiniteType.zero))
 
 def getPFT (n : Nat) : PureFiniteType :=
   match n with
@@ -30,10 +30,16 @@ def getPFT (n : Nat) : PureFiniteType :=
 
 #eval getPFT 2
 
-example (n : Nat) : FiniteType.deg (transfrom (getPFT n)) = n :=
-  Nat.recOn (motive := fun x => FiniteType.deg (transfrom (getPFT x)) = x) n
+instance : Coe PureFiniteType FiniteType := ⟨transform⟩
+
+instance : OfNat FiniteType n := ⟨getPFT n⟩
+
+example (n : Nat) : FiniteType.deg (transform (getPFT n)) = n :=
+  Nat.recOn (motive := fun x => FiniteType.deg (transform (getPFT x)) = x) n
     rfl
-    (fun n ih => show FiniteType.deg (transfrom (getPFT (Nat.succ n))) = (Nat.succ n) from
-    calc FiniteType.deg (transfrom (getPFT (Nat.succ n))) = Nat.succ (FiniteType.deg (transfrom (getPFT (n)))) := rfl
+    (fun n ih => show FiniteType.deg (transform (getPFT (Nat.succ n))) = (Nat.succ n) from
+    calc FiniteType.deg (transform (getPFT (Nat.succ n))) = Nat.succ (FiniteType.deg (transform (getPFT (n)))) := rfl
           _ = Nat.succ n := by rw [ih]
     )
+
+

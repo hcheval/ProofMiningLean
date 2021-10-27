@@ -28,8 +28,8 @@ namespace Term
 inductive wellTyped (env : Environment) : Term → FiniteType → Prop 
 | var (i σ) : env.nth i = some σ → wellTyped env (var i) σ 
 | app (t u) (ρ τ) : wellTyped env t (ρ ↣ τ) → wellTyped env u ρ → wellTyped env (app t u) τ
-| zero : wellTyped env zero FiniteType.zero 
-| successor : wellTyped env successor (FiniteType.zero ↣ FiniteType.zero)
+| zero : wellTyped env zero 0
+| successor : wellTyped env successor 1
 | kcomb (ρ σ) : wellTyped env (kcomb ρ σ) (ρ ↣ σ ↣ ρ)
 | scomb (ρ σ τ) : wellTyped env (scomb ρ σ τ) ((ρ ↣ σ ↣ τ) ↣ (ρ ↣ σ) ↣ ρ ↣ τ)
 
