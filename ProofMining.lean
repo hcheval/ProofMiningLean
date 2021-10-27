@@ -2,3 +2,4 @@ import ProofMining.Formula
 import ProofMining.Proof
 import ProofMining.IntuitionisticTheorems
 import ProofMining.IntuitionisticRules
+import ProofMining.Term

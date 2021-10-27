@@ -15,5 +15,12 @@ namespace List
 
   instance {α : Type _} : Mem α (List α) := ⟨mem⟩
 
-end List 
+  def nth : List α → Nat → Option α 
+  | [], _ => none
+  | a :: _, 0 => a
+  | _ :: l, n + 1 => nth l n
 
+variable (f : Nat → Nat)
+variable (n : Nat)
+
+#check f (n)
