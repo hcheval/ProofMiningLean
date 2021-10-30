@@ -38,7 +38,13 @@ inductive wellTyped (env : Environment) : Term → FiniteType → Prop
   Take a `term : Term` and an `env : Environment` and returns `some ρ` if `term` is well typed with `ρ` in `env`
   and `none` if `term` is ill-typed.
 -/
-def inferType (env : Environment) (term : Term) : Option FiniteType := sorry
+def inferType (env : Environment) (term : Term) : Option FiniteType
+  | env, var x => List.nth env x
+  | env, app x y => sorry
+  | env, zero => List.nth env 0
+  | env, successor => List.nth env 1
+  | env, kcomb ρ σ => sorry
+  | env, scomb ρ σ τ => sorry
 
 /-
   Sanity check for the above definitions. Show they define the same thing.
