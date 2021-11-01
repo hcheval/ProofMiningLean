@@ -42,4 +42,3 @@ example (n : Nat) : FiniteType.deg (transform (getPFT n)) = n :=
           _ = Nat.succ n := by rw [ih]
     )
 
-

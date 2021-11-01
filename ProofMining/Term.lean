@@ -38,19 +38,47 @@ inductive wellTyped (env : Environment) : Term → FiniteType → Prop
   Take a `term : Term` and an `env : Environment` and returns `some ρ` if `term` is well typed with `ρ` in `env`
   and `none` if `term` is ill-typed.
 -/
+
+def poorEq (ρ₀ : FiniteType) (ρ₁ : FiniteType) : Bool :=
+  match ρ₀ with
+    | FiniteType.zero => 
+      match ρ₁ with
+        | FiniteType.zero => true
+        | FiniteType.application _ _ => false
+    | FiniteType.application σ₀ τ₀ =>
+      match ρ₁ with
+        | FiniteType.zero => false
+        | FiniteType.application σ₁ τ₁ => ((poorEq σ₀ σ₁) && (poorEq τ₀ τ₁))
+
 def inferType : Environment → Term → Option FiniteType
   | env, var x => List.nth env x
-  | env, app x y => sorry
-  | env, zero => List.nth env 0
-  | env, successor => List.nth env 1
-  | env, kcomb ρ σ => sorry
-  | env, scomb ρ σ τ => sorry
+  | env, app x y => 
+    let ρ: Option FiniteType := inferType env x
+    let ρ₁: Option FiniteType := inferType env y
+    match ρ₁ with
+      | none => none
+      | some σ =>
+        match σ with
+          | FiniteType.zero => none
+          | FiniteType.application ρ₀ τ =>
+            match ρ with
+              | none => none
+              | some ρ₂ => cond (poorEq ρ₀ ρ₂) (some τ) none
+  | env, zero => some (FiniteType.zero)
+  | env, successor => some (FiniteType.zero ↣ FiniteType.zero)
+  | env, kcomb ρ σ => some (ρ ↣ σ ↣ ρ)
+  | env, scomb ρ σ τ => some ((ρ ↣ σ ↣ τ) ↣ (ρ ↣ σ) ↣ ρ ↣ τ) 
 
 /-
   Sanity check for the above definitions. Show they define the same thing.
 -/
 theorem infer_type_iff_well_typed (env : Environment) (t : Term) (σ : FiniteType) : 
-  wellTyped env t σ ↔ inferType env t = some σ := sorry
+  wellTyped env t σ ↔ inferType env t = some σ := 
+  Iff.intro
+    (fun h : wellTyped env t σ => 
+     show inferType env t = some σ from sorry) 
+    (fun h : inferType env t = some σ => 
+     show wellTyped env t σ from sorry)
 
 
 /-
