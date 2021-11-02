@@ -50,6 +50,11 @@ def poorEq (ρ₀ : FiniteType) (ρ₁ : FiniteType) : Bool :=
         | FiniteType.zero => false
         | FiniteType.application σ₁ τ₁ => ((poorEq σ₀ σ₁) && (poorEq τ₀ τ₁))
 
+def goodEq : FiniteType → FiniteType → Bool 
+| FiniteType.zero, FiniteType.zero => true 
+| (ρ ↣ τ), (σ ↣ δ) => goodEq ρ σ && goodEq τ δ
+| _, _ => false
+
 def inferType : Environment → Term → Option FiniteType
   | env, var x => List.nth env x
   | env, app x y => 
@@ -63,7 +68,7 @@ def inferType : Environment → Term → Option FiniteType
           | FiniteType.application ρ₀ τ =>
             match ρ with
               | none => none
-              | some ρ₂ => cond (poorEq ρ₀ ρ₂) (some τ) none
+              | some ρ₂ => cond (goodEq ρ₀ ρ₂) (some τ) none
   | env, zero => some (FiniteType.zero)
   | env, successor => some (FiniteType.zero ↣ FiniteType.zero)
   | env, kcomb ρ σ => some (ρ ↣ σ ↣ ρ)
