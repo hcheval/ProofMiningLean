@@ -39,21 +39,21 @@ inductive wellTyped (env : Environment) : Term → FiniteType → Prop
   and `none` if `term` is ill-typed.
 -/
 
-def poorEq (ρ₀ : FiniteType) (ρ₁ : FiniteType) : Bool :=
-  match ρ₀ with
-    | FiniteType.zero => 
-      match ρ₁ with
-        | FiniteType.zero => true
-        | FiniteType.application _ _ => false
-    | FiniteType.application σ₀ τ₀ =>
-      match ρ₁ with
-        | FiniteType.zero => false
-        | FiniteType.application σ₁ τ₁ => ((poorEq σ₀ σ₁) && (poorEq τ₀ τ₁))
+-- def poorEq (ρ₀ : FiniteType) (ρ₁ : FiniteType) : Bool :=
+--   match ρ₀ with
+--     | FiniteType.zero => 
+--       match ρ₁ with
+--         | FiniteType.zero => true
+--         | FiniteType.application _ _ => false
+--     | FiniteType.application σ₀ τ₀ =>
+--       match ρ₁ with
+--         | FiniteType.zero => false
+--         | FiniteType.application σ₁ τ₁ => ((poorEq σ₀ σ₁) && (poorEq τ₀ τ₁))
 
-def goodEq : FiniteType → FiniteType → Bool 
-| FiniteType.zero, FiniteType.zero => true 
-| (ρ ↣ τ), (σ ↣ δ) => goodEq ρ σ && goodEq τ δ
-| _, _ => false
+-- def goodEq : FiniteType → FiniteType → Bool 
+-- | FiniteType.zero, FiniteType.zero => true 
+-- | (ρ ↣ τ), (σ ↣ δ) => goodEq ρ σ && goodEq τ δ
+-- | _, _ => false
 
 def inferType : Environment → Term → Option FiniteType
   | env, var x => List.nth env x
@@ -68,7 +68,7 @@ def inferType : Environment → Term → Option FiniteType
           | FiniteType.application ρ₀ τ =>
             match ρ with
               | none => none
-              | some ρ₂ => cond (goodEq ρ₀ ρ₂) (some τ) none
+              | some ρ₂ => cond (ρ₀ = ρ₂) (some τ) none
   | env, zero => some (FiniteType.zero)
   | env, successor => some (FiniteType.zero ↣ FiniteType.zero)
   | env, kcomb ρ σ => some (ρ ↣ σ ↣ ρ)
