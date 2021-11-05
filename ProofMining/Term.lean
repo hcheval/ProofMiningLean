@@ -58,17 +58,24 @@ inductive wellTyped (env : Environment) : Term → FiniteType → Prop
 def inferType : Environment → Term → Option FiniteType
   | env, var x => List.nth env x
   | env, app x y => 
-    let ρ: Option FiniteType := inferType env x
-    let ρ₁: Option FiniteType := inferType env y
-    match ρ₁ with
-      | none => none
-      | some σ =>
-        match σ with
-          | FiniteType.zero => none
-          | FiniteType.application ρ₀ τ =>
-            match ρ with
-              | none => none
-              | some ρ₂ => cond (ρ₀ = ρ₂) (some τ) none
+    let type₁: Option FiniteType := inferType env x
+    let type₂: Option FiniteType := inferType env y
+    match type₁, type₂ with
+      | some (ρ ↣ τ), some ρ₁ => 
+        match ρ₁ with
+          | ρ => some τ
+      | _, _ => none
+    
+    -- WRONG SOLUTION
+    -- match ρ₁ with
+    --   | none => none
+    --   | some σ =>
+    --     match σ with
+    --       | FiniteType.zero => none
+    --       | FiniteType.application ρ₀ τ =>
+    --         match ρ with
+    --           | none => none
+    --           | some ρ₂ => cond (ρ₀ = ρ₂) (some τ) none
   | env, zero => some (FiniteType.zero)
   | env, successor => some (FiniteType.zero ↣ FiniteType.zero)
   | env, kcomb ρ σ => some (ρ ↣ σ ↣ ρ)
@@ -78,12 +85,17 @@ def inferType : Environment → Term → Option FiniteType
   Sanity check for the above definitions. Show they define the same thing.
 -/
 theorem infer_type_iff_well_typed (env : Environment) (t : Term) (σ : FiniteType) : 
-  wellTyped env t σ ↔ inferType env t = some σ := 
-  Iff.intro
-    (fun h : wellTyped env t σ => 
-     show inferType env t = some σ from sorry) 
-    (fun h : inferType env t = some σ => 
-     show wellTyped env t σ from sorry)
+  wellTyped env t σ ↔ inferType env t = some σ := by
+  apply Iff.intro
+  . intros wt
+    induction wt with
+    | app _ _ _ _ _ _ h₁ h₂ => 
+      simp only [inferType, h₂, h₁]
+    | var i _ h => 
+      simp only [inferType]
+      exact h
+    | _ => simp only [inferType]
+  . sorry
 
 
 /-
