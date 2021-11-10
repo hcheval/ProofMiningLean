@@ -20,7 +20,3 @@ namespace List
   | a :: _, 0 => a
   | _ :: l, n + 1 => nth l n
 
-variable (f : Nat → Nat)
-variable (n : Nat)
-
-#check f (n)

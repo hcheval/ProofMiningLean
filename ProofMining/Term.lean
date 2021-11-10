@@ -5,6 +5,7 @@ import ProofMining.Util
   A typing environment provides types for free variables.
   `[ρ₀, ρ₁, ..., ρₙ] : Environment` means that the variable 0 has type ρ₀, 1 has type ρ₁ and so on.
 -/
+
 abbrev Environment := List FiniteType
 
 /-
@@ -19,8 +20,34 @@ inductive Term
 | successor : Term 
 | kcomb : FiniteType → FiniteType → Term -- the K combinator, or Π in Kohlenbach's book
 | scomb : FiniteType → FiniteType → FiniteType → Term -- the S combinator, or Σ in Kohlenbach's book
+deriving DecidableEq
 
 namespace Term
+
+instance : Coe Nat Term := ⟨var⟩
+
+-- raise all variables above `cutoff` by `place` indices
+def shift (place : Nat) (cutoff : Nat := 0) : Term → Term :=
+fun term => match term with 
+| var i => if i < cutoff then var i else var $ i + place
+| app t u => app (t.shift place cutoff) (u.shift place cutoff) 
+| zero => zero 
+| successor => successor 
+| kcomb ρ σ => kcomb ρ σ
+| scomb ρ σ τ => scomb ρ σ τ
+
+
+/-
+  `subst t i s` is the substitution of the occurrences of `i` by the term `s` in the term `t`
+  A good notation could be something like t[s // i], TO FIND A GOOD NOTATION
+-/
+def subst : Term → Nat → Term → Term
+| var j, i, s => if i = j then s else j
+| app t u, i, s => app (t.subst i s) (u.subst i s)
+| zero, _, _ => zero 
+| successor, _, _ => zero 
+| kcomb ρ σ, _, _ => kcomb ρ σ
+| scomb ρ σ τ, _, _ => scomb ρ σ τ
 
 /-
   `wellTyped env t σ` means that t has type σ in the environment `env`
@@ -33,6 +60,7 @@ inductive wellTyped (env : Environment) : Term → FiniteType → Prop
 | kcomb (ρ σ) : wellTyped env (kcomb ρ σ) (ρ ↣ σ ↣ ρ)
 | scomb (ρ σ τ) : wellTyped env (scomb ρ σ τ) ((ρ ↣ σ ↣ τ) ↣ (ρ ↣ σ) ↣ ρ ↣ τ)
 
+notation env "wt⊢ " t ":" ρ:max => wellTyped env t ρ
 
 /-
   Take a `term : Term` and an `env : Environment` and returns `some ρ` if `term` is well typed with `ρ` in `env`
