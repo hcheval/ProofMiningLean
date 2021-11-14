@@ -50,7 +50,7 @@ prefix:max "∼" => negation --input with \ ~
 -- useless
 def shift (place : Nat) (cutoff : Nat := 0) : Formula → Formula := 
 fun A => match cutoff, A with 
-| c, t ≅ u => t.shift place c ≅ t.shift place c 
+| c, t ≅ u => t.shift place c ≅ u.shift place c 
 | c, A ⋀ B => A.shift place c ⋀ B.shift place c
 | c, A ⋁ B => A.shift place c ⋁ B.shift place c
 | c, A ⟹ B => A.shift place c ⟹ B.shift place c
