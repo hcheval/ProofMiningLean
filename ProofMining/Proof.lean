@@ -20,13 +20,16 @@ inductive Proof (Γ : List Formula) : Formula →  Type
 | permConj (A B : Formula) : Proof Γ (A ⋀ B ⟹ B ⋀ A)
 | permDisj (A B : Formula) : Proof Γ (A ⋁ B ⟹ B ⋁ A)
 | exFalso (A : Formula) : Proof Γ (falsum ⟹ A)
+| universalAxiom (ρ : FiniteType) (A : Formula) (t : Term) : Proof Γ (∀∀ ρ A ⟹ Formula.subst A 0 t)
+| existentialAxiom (ρ : FiniteType) (A : Formula) (t : Term) : Proof Γ (Formula.subst A 0 t ⟹ ∃∃ ρ A)
 | mpon {A B : Formula} : Proof Γ A → Proof Γ (A ⟹ B) → Proof Γ B
 | syllogism {A B C : Formula} : Proof Γ (A ⟹ B) → Proof Γ (B ⟹ C) → Proof Γ (A ⟹ C)
 | exportation {A B C : Formula} : Proof Γ (A ⋀ B ⟹ C) → Proof Γ (A ⟹ B ⟹ C)
 | importation {A B C : Formula} : Proof Γ (A ⟹ B ⟹ C) → Proof Γ (A ⋀ B ⟹ C)
 | expansion {A B : Formula} (C : Formula) : Proof Γ (A ⟹ B) → Proof Γ (C ⋁ A ⟹ C ⋁ B)
+| universalRule {A B : Formula} (ρ : FiniteType) : Proof Γ (B ⟹ A) →  Proof Γ (B ⟹ ∀∀ ρ A)
+| existentialRule {A B : Formula} (ρ : FiniteType) : Proof Γ (A ⟹ B) →  Proof Γ (∃∃ ρ A ⟹ B)
 | premise {A : Formula} : A ∈ Γ → Proof Γ A
-
 
 
 namespace Proof
