@@ -50,17 +50,17 @@ def subst : Term → Nat → Term → Term
 | scomb ρ σ τ, _, _ => scomb ρ σ τ
 
 /-
-  `wellTyped env t σ` means that t has type σ in the environment `env`
+  `WellTyped env t σ` means that t has type σ in the environment `env`
 -/
-inductive wellTyped (env : Environment) : Term → FiniteType → Prop 
-| var (i σ) : env.nth i = some σ → wellTyped env (var i) σ 
-| app (t u) (ρ τ) : wellTyped env t (ρ ↣ τ) → wellTyped env u ρ → wellTyped env (app t u) τ
-| zero : wellTyped env zero 0
-| successor : wellTyped env successor 1
-| kcomb (ρ σ) : wellTyped env (kcomb ρ σ) (ρ ↣ σ ↣ ρ)
-| scomb (ρ σ τ) : wellTyped env (scomb ρ σ τ) ((ρ ↣ σ ↣ τ) ↣ (ρ ↣ σ) ↣ ρ ↣ τ)
+inductive WellTyped (env : Environment) : Term → FiniteType → Prop 
+| var (i σ) : env.nth i = some σ → WellTyped env (var i) σ 
+| app (t u) (ρ τ) : WellTyped env t (ρ ↣ τ) → WellTyped env u ρ → WellTyped env (app t u) τ
+| zero : WellTyped env zero 0
+| successor : WellTyped env successor 1
+| kcomb (ρ σ) : WellTyped env (kcomb ρ σ) (ρ ↣ σ ↣ ρ)
+| scomb (ρ σ τ) : WellTyped env (scomb ρ σ τ) ((ρ ↣ σ ↣ τ) ↣ (ρ ↣ σ) ↣ ρ ↣ τ)
 
-notation env "wt⊢ " t ":" ρ:max => wellTyped env t ρ
+notation env "wt⊢ " t ":" ρ:max => WellTyped env t ρ
 
 /-
   Take a `term : Term` and an `env : Environment` and returns `some ρ` if `term` is well typed with `ρ` in `env`
@@ -113,7 +113,7 @@ def inferType : Environment → Term → Option FiniteType
   Sanity check for the above definitions. Show they define the same thing.
 -/
 theorem infer_type_iff_well_typed (env : Environment) (t : Term) (σ : FiniteType) : 
-  wellTyped env t σ ↔ inferType env t = some σ := by
+  WellTyped env t σ ↔ inferType env t = some σ := by
   apply Iff.intro
   . intros wt
     induction wt with
@@ -124,8 +124,6 @@ theorem infer_type_iff_well_typed (env : Environment) (t : Term) (σ : FiniteTyp
       exact h
     | _ => simp only [inferType]
   . sorry
-
-
 
 
 

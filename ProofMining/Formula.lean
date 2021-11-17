@@ -69,7 +69,7 @@ def subst : Formula → Nat → Term → Formula
 
 open Term in
 inductive WellFormed : Environment → Formula → Prop 
-| equality : wellTyped e t 0 → wellTyped e u 0 → WellFormed e (t ≅ u)
+| equality : WellTyped e t 0 → WellTyped e u 0 → WellFormed e (t ≅ u)
 | conjunction (A B) : WellFormed e A → WellFormed e B → WellFormed e (A ⋀ B)
 | disjunction (A B) : WellFormed e A → WellFormed e B → WellFormed e (A ⋁ B)
 | implication (A B) : WellFormed e A → WellFormed e B → WellFormed e (A ⟹ B)

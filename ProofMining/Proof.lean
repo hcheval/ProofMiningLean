@@ -2,7 +2,7 @@ import ProofMining.Formula
 import ProofMining.Util
 
 open Formula (falsum WellFormed)
-open Term (wellTyped)
+open Term (WellTyped)
 
 /-
   The type of propositional proofs. 
