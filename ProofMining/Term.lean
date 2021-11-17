@@ -45,7 +45,7 @@ def subst : Term → Nat → Term → Term
 | var j, i, s => if i = j then s else j
 | app t u, i, s => app (t.subst i s) (u.subst i s)
 | zero, _, _ => zero 
-| successor, _, _ => zero 
+| successor, _, _ => successor 
 | kcomb ρ σ, _, _ => kcomb ρ σ
 | scomb ρ σ τ, _, _ => scomb ρ σ τ
 
@@ -60,7 +60,9 @@ inductive WellTyped (env : Environment) : Term → FiniteType → Prop
 | kcomb (ρ σ) : WellTyped env (kcomb ρ σ) (ρ ↣ σ ↣ ρ)
 | scomb (ρ σ τ) : WellTyped env (scomb ρ σ τ) ((ρ ↣ σ ↣ τ) ↣ (ρ ↣ σ) ↣ ρ ↣ τ)
 
-notation env "wt⊢ " t ":" ρ:max => WellTyped env t ρ
+notation env " ⊢ " t " : " ρ:max => WellTyped env t ρ
+
+
 
 /-
   Take a `term : Term` and an `env : Environment` and returns `some ρ` if `term` is well typed with `ρ` in `env`
@@ -124,6 +126,58 @@ theorem infer_type_iff_well_typed (env : Environment) (t : Term) (σ : FiniteTyp
       exact h
     | _ => simp only [inferType]
   . sorry
+
+
+
+
+/-
+  A term can only have one type
+-/
+
+theorem unique_typing : WellTyped e t ρ → WellTyped e t σ → ρ = σ := by 
+  intros wtρ wtσ 
+  rw [infer_type_iff_well_typed] at wtρ wtσ 
+  have : some ρ = some σ := Eq.trans wtρ.symm wtσ
+  cases this
+  rfl
+
+/-
+  Substitution preserves typing
+-/
+
+
+theorem subst_well_typed : WellTyped e t ρ → e.nth i = some σ → WellTyped e s σ → WellTyped e (t.subst i s) ρ := by 
+  intros wtt wti wts 
+  induction t generalizing ρ with 
+  | var j => 
+    byCases h : i = j 
+    . rw [h] at wti ⊢
+      cases wtt 
+      have : some σ = some ρ := Eq.trans wti.symm (by assumption) --this is ridiculous. How do I anonymously name the hypotheses resulting from cases?!?!?!
+      cases this
+      simp [*, subst]
+    . simp [*, subst]
+  | app u v ihu ihv => 
+    cases wtt with 
+    | app _ _ τ _ wtu wtv =>
+    exact WellTyped.app _ _ _ _ (ihu wtu) (ihv wtv) 
+  | _ => 
+    simp [*, subst]
+
+
+/-
+  If a term has a type in an environment, then it has that same type in any larger environment
+-/
+
+theorem weakening : WellTyped e₁ t ρ → e₁ <+ e₂ → WellTyped e₂ t ρ := by 
+  intros wt₁ wt₂
+  induction t generalizing ρ with 
+  | var j => 
+    sorry -- immediate but we need lemma about list inclusions
+  | app u v ihu ihv => 
+    cases wt₁ with | app _ _ τ _ wtu wtv => 
+    exact WellTyped.app _ _ _ _ (ihu wtu) (ihv wtv)
+  | _ => cases wt₁; constructor
 
 
 
