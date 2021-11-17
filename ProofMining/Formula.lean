@@ -18,7 +18,7 @@ inductive Formula
 | falsum : Formula
 | universal : FiniteType → Formula → Formula 
 | existential : FiniteType → Formula → Formula 
-deriving DecidableEq
+deriving DecidableEq, Inhabited
 
 
 namespace Formula

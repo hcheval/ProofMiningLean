@@ -2,7 +2,7 @@
 inductive FiniteType where
 | zero : FiniteType
 | application : FiniteType → FiniteType → FiniteType
-deriving Repr, DecidableEq
+deriving Repr, DecidableEq, Inhabited
 
 infixr:60 "↣" => FiniteType.application
 

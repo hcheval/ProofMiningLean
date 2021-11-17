@@ -20,7 +20,7 @@ inductive Term
 | successor : Term 
 | kcomb : FiniteType → FiniteType → Term -- the K combinator, or Π in Kohlenbach's book
 | scomb : FiniteType → FiniteType → FiniteType → Term -- the S combinator, or Σ in Kohlenbach's book
-deriving DecidableEq
+deriving DecidableEq, Inhabited
 
 namespace Term
 
@@ -124,6 +124,10 @@ theorem infer_type_iff_well_typed (env : Environment) (t : Term) (σ : FiniteTyp
       exact h
     | _ => simp only [inferType]
   . sorry
+
+
+
+
 
 
 /-

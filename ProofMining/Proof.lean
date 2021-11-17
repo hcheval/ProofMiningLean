@@ -1,7 +1,8 @@
 import ProofMining.Formula
 import ProofMining.Util
 
-open Formula (falsum)
+open Formula (falsum WellFormed)
+open Term (wellTyped)
 
 /-
   The type of propositional proofs. 
@@ -30,7 +31,6 @@ inductive Proof (Γ : List Formula) : Formula →  Type
 | universalRule {A B : Formula} (ρ : FiniteType) : Proof Γ (B ⟹ A) →  Proof Γ (B ⟹ ∀∀ ρ A)
 | existentialRule {A B : Formula} (ρ : FiniteType) : Proof Γ (A ⟹ B) →  Proof Γ (∃∃ ρ A ⟹ B)
 | premise {A : Formula} : A ∈ Γ → Proof Γ A
-
 
 namespace Proof
 
