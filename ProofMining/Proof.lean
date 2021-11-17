@@ -13,6 +13,7 @@ open Term (wellTyped)
   Note the presence of the additional constructor `premise` saying that a formula can always be trivially proved when it is taken as a premise.
 -/
 
+
 inductive Proof (Γ : List Formula) : Formula →  Type
 | contrConj (A : Formula) : Proof Γ (A ⟹ A ⋀ A)
 | contrDisj (A : Formula) : Proof Γ (A ⋁ A ⟹ A)
@@ -31,6 +32,56 @@ inductive Proof (Γ : List Formula) : Formula →  Type
 | universalRule {A B : Formula} (ρ : FiniteType) : Proof Γ (B ⟹ A) →  Proof Γ (B ⟹ ∀∀ ρ A)
 | existentialRule {A B : Formula} (ρ : FiniteType) : Proof Γ (A ⟹ B) →  Proof Γ (∃∃ ρ A ⟹ B)
 | premise {A : Formula} : A ∈ Γ → Proof Γ A
+
+
+
+/-
+  This is likely the complete definition of `Proof` in our representation of formulas.
+  Just left here for the time being.
+-/
+
+-- inductive Proof : Environment → List Formula →  Formula →  Type
+-- | contrConj (e : Environment) (Γ : List Formula) (A : Formula) : 
+--   WellFormed e A → Proof e Γ (A ⟹ A ⋀ A)
+-- | contrDisj (e : Environment) (Γ : List Formula) (A : Formula) :
+--   WellFormed e A → Proof e Γ (A ⋁ A ⟹ A)
+-- | weakConj (e : Environment) (Γ : List Formula) (A B : Formula) : 
+--   WellFormed e A → WellFormed e B → Proof e Γ (A ⋀ B ⟹ A)
+-- | weakDisj (e : Environment) (Γ : List Formula) (A B : Formula) : 
+--   WellFormed e A → WellFormed e B → Proof e Γ (A ⟹ A ⋁ B)
+-- | permConj (e : Environment) (Γ : List Formula) (A B : Formula) : 
+--   WellFormed e A → WellFormed e B → Proof e Γ (A ⋀ B ⟹ B ⋀ A)
+-- | permDisj (e : Environment) (Γ : List Formula) (A B : Formula) : 
+--   WellFormed e A → WellFormed e B → Proof e Γ (A ⋁ B ⟹ B ⋁ A)
+-- | exFalso (e : Environment) (Γ : List Formula) (A : Formula) : 
+--   WellFormed e A → Proof e Γ (falsum ⟹ A)
+-- | universalAxiom (e : Environment) (Γ : List Formula) (ρ : FiniteType) (A : Formula) (t : Term) : 
+--   WellFormed (ρ :: e) A → wellTyped e t ρ → Proof e Γ (∀∀ ρ A ⟹ Formula.subst A 0 t)
+-- | existentialAxiom (ρ : FiniteType) (A : Formula) (t : Term) : 
+--   WellFormed (ρ :: e) A → wellTyped e t ρ → Proof e Γ (Formula.subst A 0 t ⟹ ∃∃ ρ A)
+-- | mpon (e : Environment) (Γ : List Formula) {A B : Formula} : 
+--   WellFormed e A → WellFormed e B → Proof e Γ A → Proof e Γ (A ⟹ B) → Proof e Γ B
+-- | syllogism (e : Environment) (Γ : List Formula) {A B C : Formula} : 
+--   WellFormed e A → WellFormed e B → WellFormed e C → 
+--   Proof e Γ (A ⟹ B) → Proof e Γ (B ⟹ C) → Proof e Γ (A ⟹ C)
+-- | exportation (e : Environment) (Γ : List Formula){A B C : Formula} :
+--   WellFormed e A → WellFormed e B → WellFormed e C → 
+--   Proof e Γ (A ⋀ B ⟹ C) → Proof e Γ (A ⟹ B ⟹ C)
+-- | importation (e : Environment) (Γ : List Formula){A B C : Formula} : 
+--   WellFormed e A → WellFormed e B → WellFormed e C → 
+--   Proof e Γ (A ⟹ B ⟹ C) → Proof e Γ (A ⋀ B ⟹ C)
+-- | expansion (e : Environment) (Γ : List Formula){A B : Formula} (C : Formula) : 
+--   WellFormed e A → WellFormed e B → WellFormed e C → 
+--   Proof e Γ (A ⟹ B) → Proof e Γ (C ⋁ A ⟹ C ⋁ B)
+-- | universalRule (e : Environment) (Γ : List Formula){A B : Formula} (ρ : FiniteType) : 
+--   WellFormed (ρ :: e) A → WellFormed e B → 
+--   Proof e Γ (B ⟹ A) →  Proof e Γ (B ⟹ ∀∀ ρ A)
+-- | existentialRule (e : Environment) (Γ : List Formula){A B : Formula} (ρ : FiniteType) : 
+--   WellFormed (ρ :: e) A → WellFormed e B → 
+--   Proof e Γ (A ⟹ B) →  Proof e Γ (∃∃ ρ A ⟹ B)
+-- | premise (e : Environment) (Γ : List Formula) {A : Formula} : 
+--   (∀ P, P ∈ Γ → WellFormed e P) → A ∈ Γ → Proof e Γ A
+
 
 namespace Proof
 
