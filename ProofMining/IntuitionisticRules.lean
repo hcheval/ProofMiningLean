@@ -38,3 +38,8 @@ theorem r50 {A B : Formula} (h₁ : Γ ⊢ A) (h₂ : Γ ⊢ B) : Γ ⊢ A ⋀ B
   let p₁ : Γ ⊢ A ⟹ (B ⟹ A ⋀ B) := exportation (syllogism (permConj A B) (permConj B A))
   let p₂ : Γ ⊢ B ⟹ A ⋀ B  := mpon h₁ p₁
   mpon h₂ p₂
+
+theorem r42 {A : Formula} {ρ : FiniteType} (h₁ : Γ ⊢ A) : Γ ⊢ ∀∀ ρ A := 
+  let p₁ : Γ ⊢ A ⟹ A := syllogism (contrConj _) (weakConj _ _)
+  let p₂ : Γ ⊢ A ⟹ ∀∀ ρ A := universalRule ρ p₁
+  mpon h₁ p₂
