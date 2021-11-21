@@ -43,3 +43,6 @@ theorem r42 {A : Formula} {ρ : FiniteType} (h₁ : Γ ⊢ A) : Γ ⊢ ∀∀ ρ
   let p₁ : Γ ⊢ A ⟹ A := syllogism (contrConj _) (weakConj _ _)
   let p₂ : Γ ⊢ A ⟹ ∀∀ ρ A := universalRule ρ p₁
   mpon h₁ p₂
+
+theorem r47 {A : Formula} {ρ : FiniteType} {t : Term} (h₁ : Γ ⊢ ∀∀ ρ A) : Γ ⊢ Formula.subst A 0 t :=
+  mpon h₁ (universalAxiom ρ A t)
