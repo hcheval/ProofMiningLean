@@ -77,3 +77,7 @@ inductive WellFormed : Environment → Formula → Prop
 | existential (A) : WellFormed (ρ :: e) A → WellFormed e (∃∃ ρ A)
 
 notation e "wf⊢" A:max => WellFormed e A
+
+def highereq : FiniteType → Term → Term → Formula
+| ρ ↣ τ, s, t => universal ρ (highereq τ (Term.app s $ Term.var $ τ.deg) (Term.app t $ Term.var $ τ.deg))
+| 0, s, t => equality s t
