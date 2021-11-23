@@ -35,9 +35,9 @@ inductive Proof (Γ : List Formula) : Formula →  Type
 | eqZeroRefl (x : Term) : Proof Γ (x ≅ x)
 | eqZeroSymm (x y : Term) : Proof Γ $ (x ≅ y) ⟹ (y ≅ x)
 | ezZeroTrans (x y z : Term) : Proof Γ $ (x ≅ y) ⟹ (y ≅ z) ⟹ (x ≅ z)
-| kcombAxiom (ρ τ : FiniteType) : Proof Γ (highereq ρ (Term.kcomb ρ τ) (Term.var 0))
-| scombAxiom (δ ρ τ : FiniteType) : Proof Γ (highereq τ (Term.scomb δ ρ τ) (Term.app (Term.app (Term.var 0) (Term.var 2)) (Term.app (Term.var 1) (Term.var 2))))
-| induct {A : Formula} : Proof Γ ((A.subst 0 Term.zero) ⋀ (∀∀ FiniteType.zero ((A.subst 0 (Term.var 0)) ⟹ (A.subst 0 (Term.subst Term.successor 0 $ Term.var 0))))) → Proof Γ ((∀∀ FiniteType.zero A).subst 0 $ Term.var 0)
+| kcombAxiom (ρ τ : FiniteType) (x y : Term) : Proof Γ (highereq ρ (Term.app (Term.app (Term.kcomb ρ τ) x) y) (x))
+| scombAxiom (δ ρ τ : FiniteType) (x y z : Term) : Proof Γ (highereq τ (Term.app (Term.app (Term.app (Term.scomb δ ρ τ) x) y) z) (Term.app (Term.app x z) (Term.app y z)))
+| induct {A : Formula} : Proof Γ $ ((A.subst 0 Term.zero) ⋀ (∀∀ FiniteType.zero ((A.subst 0 (Term.var 0)) ⟹ (A.subst 0 (Term.subst Term.successor 0 $ Term.var 0))))) ⟹ (∀∀ FiniteType.zero A)
 
 
 /-
