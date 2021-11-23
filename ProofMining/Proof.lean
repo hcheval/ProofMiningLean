@@ -40,6 +40,7 @@ inductive Proof (Γ : List Formula) : Formula →  Type
 | induct {A : Formula} : Proof Γ $ ((A.subst 0 Term.zero) ⋀ (∀∀ FiniteType.zero ((A.subst 0 (Term.var 0)) ⟹ (A.subst 0 (Term.subst Term.successor 0 $ Term.var 0))))) ⟹ (∀∀ FiniteType.zero A)
 | succAxiomZero (x : Term) : Proof Γ ∼((Term.app Term.successor x) ≅ Term.zero)
 | succAxiom (x y : Term) : Proof Γ $ ((Term.app Term.successor x) ≅ (Term.app Term.successor y)) ⟹ (x ≅ y)
+| qfer {A : Formula} {s p r : Term} {ρ τ : FiniteType} : Proof Γ (A ⟹ (highereq ρ s t)) → Proof Γ (A ⟹ highereq τ (Term.subst r 0 s) (Term.subst r 0 p)) 
 
 
 /-
