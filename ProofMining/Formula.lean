@@ -79,5 +79,5 @@ inductive WellFormed : Environment → Formula → Prop
 notation e "wf⊢" A:max => WellFormed e A
 
 def highereq : FiniteType → Term → Term → Formula
-| ρ ↣ τ, s, t => universal ρ (highereq τ (Term.app s $ Term.var $ τ.deg) (Term.app t $ Term.var $ τ.deg))
+| ρ ↣ τ, s, t => universal ρ (highereq τ (Term.app (s.shift 1) $ Term.var $ 0) (Term.app (t.shift 1) $ Term.var $ 0))
 | 0, s, t => equality s t
