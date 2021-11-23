@@ -32,6 +32,9 @@ inductive Proof (Γ : List Formula) : Formula →  Type
 | universalRule {A B : Formula} (ρ : FiniteType) : Proof Γ (B ⟹ A) →  Proof Γ (B ⟹ ∀∀ ρ A)
 | existentialRule {A B : Formula} (ρ : FiniteType) : Proof Γ (A ⟹ B) →  Proof Γ (∃∃ ρ A ⟹ B)
 | premise {A : Formula} : A ∈ Γ → Proof Γ A
+| eqZeroRefl (x : Term) : Proof Γ (x ≅ x)
+| eqZeroSymm (x y : Term) : Proof Γ (x ≅ y) → Proof Γ (y ≅ x)
+| ezZeroTrans (x y z : Term) : Proof Γ (x ≅ y) → Proof Γ (y ≅ z) → Proof Γ (x ≅ z)
 
 
 
