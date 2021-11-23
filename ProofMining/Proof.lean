@@ -37,7 +37,7 @@ inductive Proof (Γ : List Formula) : Formula →  Type
 | ezZeroTrans (x y z : Term) : Proof Γ (x ≅ y) → Proof Γ (y ≅ z) → Proof Γ (x ≅ z)
 | kcombAxiom (ρ τ : FiniteType) : Proof Γ (highereq ρ (Term.kcomb ρ τ) (Term.var 0))
 | scombAxiom (δ ρ τ : FiniteType) : Proof Γ (highereq τ (Term.scomb δ ρ τ) (Term.app (Term.app (Term.var 0) (Term.var 2)) (Term.app (Term.var 1) (Term.var 2))))
-
+| induct {A : Formula} : Proof Γ ((A.subst 0 Term.zero) ⋀ (∀∀ FiniteType.zero ((A.subst 0 (Term.var 0)) ⟹ (A.subst 0 (Term.subst Term.successor 0 $ Term.var 0))))) → Proof Γ (∀∀ FiniteType.zero A)
 
 
 /-
