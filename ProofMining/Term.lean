@@ -52,13 +52,13 @@ def subst : Term → Nat → Term → Term
 | scomb ρ σ τ, _, _ => scomb ρ σ τ
 | recursorOne ρ, _, _ => recursorOne ρ
 
-def finiteTypeExpanderForRecursor (ρ : FiniteType) : FiniteType → FiniteType
-| τ ↣ δ => finiteTypeExpanderForRecursor ρ δ ↣ (ρ ↣ 0 ↣ τ)
-| 0 => 0 ↣ ρ
+def finiteTypeExpanderForRecursor (ρ : FiniteType) (ρ₁ : FiniteType) : FiniteType → FiniteType
+| τ ↣ δ => (ρ ↣ 0 ↣ τ) ↣ finiteTypeExpanderForRecursor ρ ρ₁ δ
+| 0 => ρ₁
 
 def recursorOneExpend (ρ : FiniteType) : FiniteType := 
 match ρ with
-  | τ ↣ δ => finiteTypeExpanderForRecursor ρ ρ ↣ τ
+  | τ ↣ δ => 0 ↣ ρ ↣ finiteTypeExpanderForRecursor ρ τ ρ
   | 0 => sorry
 
 /-
