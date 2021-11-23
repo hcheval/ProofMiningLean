@@ -116,7 +116,7 @@ def inferType : Environment → Term → Option FiniteType
   | env, successor => some (FiniteType.zero ↣ FiniteType.zero)
   | env, kcomb ρ σ => some (ρ ↣ σ ↣ ρ)
   | env, scomb ρ σ τ => some ((ρ ↣ σ ↣ τ) ↣ (ρ ↣ σ) ↣ ρ ↣ τ) 
-
+  | env, recursorOne ρ => some $ recursorOneExpend ρ
 /-
   Sanity check for the above definitions. Show they define the same thing.
 -/
