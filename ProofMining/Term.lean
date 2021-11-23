@@ -52,7 +52,14 @@ def subst : Term → Nat → Term → Term
 | scomb ρ σ τ, _, _ => scomb ρ σ τ
 | recursorOne ρ, _, _ => recursorOne ρ
 
-def recursorOneExpend : FiniteType → FiniteType := sorry
+def finiteTypeExpanderForRecursor (ρ : FiniteType) : FiniteType → FiniteType
+| τ ↣ δ => finiteTypeExpanderForRecursor ρ δ ↣ (ρ ↣ 0 ↣ τ)
+| 0 => 0 ↣ ρ
+
+def recursorOneExpend (ρ : FiniteType) : FiniteType := 
+match ρ with
+  | τ ↣ δ => finiteTypeExpanderForRecursor ρ ρ ↣ τ
+  | 0 => sorry
 
 /-
   `WellTyped env t σ` means that t has type σ in the environment `env`
