@@ -20,6 +20,7 @@ inductive Term
 | successor : Term 
 | kcomb : FiniteType → FiniteType → Term -- the K combinator, or Π in Kohlenbach's book
 | scomb : FiniteType → FiniteType → FiniteType → Term -- the S combinator, or Σ in Kohlenbach's book
+| recursorOne: FiniteType → Term
 deriving DecidableEq, Inhabited
 
 namespace Term
@@ -35,6 +36,7 @@ fun term => match term with
 | successor => successor 
 | kcomb ρ σ => kcomb ρ σ
 | scomb ρ σ τ => scomb ρ σ τ
+| recursorOne ρ => recursorOne ρ
 
 
 /-
@@ -48,6 +50,9 @@ def subst : Term → Nat → Term → Term
 | successor, _, _ => successor 
 | kcomb ρ σ, _, _ => kcomb ρ σ
 | scomb ρ σ τ, _, _ => scomb ρ σ τ
+| recursorOne ρ, _, _ => recursorOne ρ
+
+def recursorOneExpend : FiniteType → FiniteType := sorry
 
 /-
   `WellTyped env t σ` means that t has type σ in the environment `env`
@@ -59,6 +64,7 @@ inductive WellTyped (env : Environment) : Term → FiniteType → Prop
 | successor : WellTyped env successor 1
 | kcomb (ρ σ) : WellTyped env (kcomb ρ σ) (ρ ↣ σ ↣ ρ)
 | scomb (ρ σ τ) : WellTyped env (scomb ρ σ τ) ((ρ ↣ σ ↣ τ) ↣ (ρ ↣ σ) ↣ ρ ↣ τ)
+| recursorOne ρ : WellTyped env (recursorOne ρ) (recursorOneExpend ρ)
 
 notation env " ⊢ " t " : " ρ:max => WellTyped env t ρ
 
