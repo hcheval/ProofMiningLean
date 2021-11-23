@@ -38,6 +38,8 @@ inductive Proof (Γ : List Formula) : Formula →  Type
 | kcombAxiom (ρ τ : FiniteType) (x y : Term) : Proof Γ (highereq ρ (Term.app (Term.app (Term.kcomb ρ τ) x) y) (x))
 | scombAxiom (δ ρ τ : FiniteType) (x y z : Term) : Proof Γ (highereq τ (Term.app (Term.app (Term.app (Term.scomb δ ρ τ) x) y) z) (Term.app (Term.app x z) (Term.app y z)))
 | induct {A : Formula} : Proof Γ $ ((A.subst 0 Term.zero) ⋀ (∀∀ FiniteType.zero ((A.subst 0 (Term.var 0)) ⟹ (A.subst 0 (Term.subst Term.successor 0 $ Term.var 0))))) ⟹ (∀∀ FiniteType.zero A)
+| succAxiomZero (x : Term) : Proof Γ ∼((Term.app Term.successor x) ≅ Term.zero)
+| succAxiom (x y : Term) : Proof Γ $ ((Term.app Term.successor x) ≅ (Term.app Term.successor y)) ⟹ (x ≅ y)
 
 
 /-
