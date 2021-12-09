@@ -101,16 +101,14 @@ notation env " ⊢ " t " : " ρ:max => WellTyped env t ρ
 -- | (ρ ↣ τ), (σ ↣ δ) => goodEq ρ σ && goodEq τ δ
 -- | _, _ => false
 
+@[simp]
+def inferTypeAppAux : Option FiniteType → Option FiniteType → Option FiniteType 
+| ρ ↣ τ, σ => if ρ = σ then some τ else none 
+| _, _ => none
+
 def inferType : Environment → Term → Option FiniteType
   | env, var x => List.nth env x
-  | env, app x y => 
-    let type₁: Option FiniteType := inferType env x
-    let type₂: Option FiniteType := inferType env y
-    match type₁, type₂ with
-      | some (ρ ↣ τ), some ρ₁ => 
-        match ρ₁ with
-          | ρ => some τ
-      | _, _ => none
+  | env, app x y => inferTypeAppAux (inferType env x) (inferType env y)
     
     -- WRONG SOLUTION
     -- match ρ₁ with
@@ -136,14 +134,12 @@ theorem infer_type_iff_well_typed (env : Environment) (t : Term) (σ : FiniteTyp
   . intros wt
     induction wt with
     | app _ _ _ _ _ _ h₁ h₂ => 
-      simp only [inferType, h₂, h₁]
+      simp [inferType, h₂, h₁]
     | var i _ h => 
       simp only [inferType]
       exact h
     | _ => simp only [inferType]
   . sorry
-
-
 
 
 /-
@@ -162,7 +158,8 @@ theorem unique_typing : WellTyped e t ρ → WellTyped e t σ → ρ = σ := by
 -/
 
 
-theorem subst_well_typed : WellTyped e t ρ → e.nth i = some σ → WellTyped e s σ → WellTyped e (t.subst i s) ρ := by 
+theorem subst_well_typed {env} {t s} {ρ σ} {i} : 
+  WellTyped env t ρ → env.nth i = some σ → WellTyped env s σ → WellTyped env (t.subst i s) ρ := by 
   intros wtt wti wts 
   induction t generalizing ρ with 
   | var j => 
@@ -179,13 +176,13 @@ theorem subst_well_typed : WellTyped e t ρ → e.nth i = some σ → WellTyped 
     exact WellTyped.app _ _ _ _ (ihu wtu) (ihv wtv) 
   | _ => 
     simp [*, subst]
-
+#check @subst_well_typed
 
 /-
   If a term has a type in an environment, then it has that same type in any larger environment
 -/
 
-theorem weakening : WellTyped e₁ t ρ → e₁ <+ e₂ → WellTyped e₂ t ρ := by 
+theorem weakening {t} : WellTyped e₁ t ρ → e₁ <+ e₂ → WellTyped e₂ t ρ := by 
   intros wt₁ wt₂
   induction t generalizing ρ with 
   | var j => 

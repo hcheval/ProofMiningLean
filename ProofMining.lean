@@ -1,6 +1,0 @@
-import ProofMining.Formula
-import ProofMining.Proof
-import ProofMining.FiniteType
-import ProofMining.IntuitionisticTheorems
-import ProofMining.IntuitionisticRules
-import ProofMining.Term
