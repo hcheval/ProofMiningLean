@@ -81,3 +81,22 @@ notation e "wf⊢" A:max => WellFormed e A
 def highereq : FiniteType → Term → Term → Formula
 | ρ ↣ τ, s, t => universal ρ (highereq τ (Term.app (s.shift 1) $ Term.var $ 0) (Term.app (t.shift 1) $ Term.var $ 0))
 | 0, s, t => equality s t
+
+
+def isWellFormed (env : Environment) (A : Formula) : Bool := match env, A with 
+| e, t ≅ s => Term.isWellTyped env t ∧ Term.isWellTyped env s
+| e, A ⋀ B => isWellFormed env A ∧ isWellFormed env B 
+| e, A ⋁ B => isWellFormed env A ∧ isWellFormed env B 
+| e, A ⟹ B => isWellFormed env A ∧ isWellFormed env B 
+| e, ∀∀ σ A => isWellFormed (σ :: e) A
+| e, ∃∃ σ A => isWellFormed (σ :: e) A
+| _, falsum => true 
+
+
+theorem well_formed_iff_is_well_formed {env} {A} : WellFormed env A ↔ isWellFormed env A := TODO_ALEX
+
+
+instance {env : Environment} {A : Formula} : Decidable $ WellFormed env A := 
+  if h : isWellFormed env A
+    then Decidable.isTrue (by rw [well_formed_iff_is_well_formed]; exact h) 
+    else Decidable.isFalse (by rw [well_formed_iff_is_well_formed]; exact h)

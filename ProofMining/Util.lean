@@ -31,3 +31,9 @@ namespace List
   | cons₂ : Sublist x y → Sublist (a :: x) (a :: y)
 
   infix:50 " <+ " => Sublist
+
+end List 
+
+
+macro "TODO_ALEX" : term => `(sorry)
+macro "TODO_ALEX" : tactic => `(sorry)

@@ -142,6 +142,10 @@ theorem infer_type_iff_well_typed (env : Environment) (t : Term) (σ : FiniteTyp
   . sorry
 
 
+@[simp]
+def isWellTyped (env : Environment) (t : Term) := Option.isSome $ inferType env t
+
+
 /-
   A term can only have one type
 -/
