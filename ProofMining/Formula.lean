@@ -95,6 +95,8 @@ def isWellFormed (env : Environment) (A : Formula) : Bool := match env, A with
 #check @propext
 #check @Decidable.rec
 #check decide
+#check Option.isSome (some 0)
+#eval Option.isSome (some 0)
 
 theorem well_formed_iff_is_well_formed {env} {A} : WellFormed env A ↔ isWellFormed env A := by
   apply Iff.intro
@@ -102,7 +104,11 @@ theorem well_formed_iff_is_well_formed {env} {A} : WellFormed env A ↔ isWellFo
     induction h with
     | equality h1 h2 =>
       simp only [isWellFormed]
-      sorry
+      rw [Term.infer_type_iff_well_typed] at h1
+      rw [Term.infer_type_iff_well_typed] at h2
+      simp
+      rw [h1, h2]
+      simp
     | conjunction _ _ _ _ h1 h2 =>
       simp only [isWellFormed]
       have h : isWellFormed _ _ ∧ isWellFormed _ _ := And.intro h1 h2
