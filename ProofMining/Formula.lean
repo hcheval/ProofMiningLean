@@ -92,9 +92,40 @@ def isWellFormed (env : Environment) (A : Formula) : Bool := match env, A with
 | e, ∃∃ σ A => isWellFormed (σ :: e) A
 | _, falsum => true 
 
+#check @propext
+#check @Decidable.rec
+#check decide
 
-theorem well_formed_iff_is_well_formed {env} {A} : WellFormed env A ↔ isWellFormed env A := TODO_ALEX
-
+theorem well_formed_iff_is_well_formed {env} {A} : WellFormed env A ↔ isWellFormed env A := by
+  apply Iff.intro
+  . intros h
+    induction h with
+    | equality h1 h2 =>
+      simp only [isWellFormed]
+      sorry
+    | conjunction _ _ _ _ h1 h2 =>
+      simp only [isWellFormed]
+      have h : isWellFormed _ _ ∧ isWellFormed _ _ := And.intro h1 h2
+      rw [h1, h2]
+      simp
+    | disjunction _ _ _ _ h1 h2 =>
+      simp only [isWellFormed]
+      have h : isWellFormed _ _ ∧ isWellFormed _ _ := And.intro h1 h2
+      rw [h1, h2]
+      simp
+    | implication _ _ _ _ h1 h2 =>
+      simp only [isWellFormed]
+      have h : isWellFormed _ _ ∧ isWellFormed _ _ := And.intro h1 h2
+      rw [h1, h2]
+      simp
+    | universal _ _ h => 
+      simp only [isWellFormed]
+      exact h
+    | existential _ _ h => 
+      simp only [isWellFormed]
+      exact h
+  . intros h
+    sorry
 
 instance {env : Environment} {A : Formula} : Decidable $ WellFormed env A := 
   if h : isWellFormed env A
