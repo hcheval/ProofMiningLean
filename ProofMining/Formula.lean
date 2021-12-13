@@ -67,6 +67,7 @@ def subst : Formula → Nat → Term → Formula
 | universal ρ A, i, s => universal ρ $ A.subst (i + 1) (s.shift (place := 1))
 | existential ρ A, i, s => existential ρ $ A.subst (i + 1) (s.shift (place := 1))
 
+
 open Term in
 inductive WellFormed : Environment → Formula → Prop 
 | equality : WellTyped e t 0 → WellTyped e u 0 → WellFormed e (t ≅ u)
@@ -84,10 +85,10 @@ def highereq : FiniteType → Term → Term → Formula
 
 
 def isWellFormed (env : Environment) (A : Formula) : Bool := match env, A with 
-| e, t ≅ s => Term.isWellTyped env t ∧ Term.isWellTyped env s
-| e, A ⋀ B => isWellFormed env A ∧ isWellFormed env B 
-| e, A ⋁ B => isWellFormed env A ∧ isWellFormed env B 
-| e, A ⟹ B => isWellFormed env A ∧ isWellFormed env B 
+| e, t ≅ s => Term.isWellTyped env t && Term.isWellTyped env s
+| e, A ⋀ B => isWellFormed env A && isWellFormed env B 
+| e, A ⋁ B => isWellFormed env A && isWellFormed env B 
+| e, A ⟹ B => isWellFormed env A && isWellFormed env B 
 | e, ∀∀ σ A => isWellFormed (σ :: e) A
 | e, ∃∃ σ A => isWellFormed (σ :: e) A
 | _, falsum => true 
@@ -100,6 +101,11 @@ def isWellFormed (env : Environment) (A : Formula) : Bool := match env, A with
 #eval Option.isSome (some 0)
 #print Decidable
 
+@[simp]
+theorem bool_and_iff_prop_and {x y : Bool} : (x && y) = true ↔ x = true ∧ y = true := by 
+  cases x <;> cases y <;> simp
+  
+
 theorem well_formed_iff_is_well_formed {env} {A} : WellFormed env A ↔ isWellFormed env A := by
   apply Iff.intro
   . intros h
@@ -111,19 +117,17 @@ theorem well_formed_iff_is_well_formed {env} {A} : WellFormed env A ↔ isWellFo
       simp
       rw [h1, h2]
       simp
+    /-**FOR ALEX: All the cases below can be proved in the exact same way. Join them in a single general case**-/
     | conjunction _ _ _ _ h1 h2 =>
       simp only [isWellFormed]
-      have h : isWellFormed _ _ ∧ isWellFormed _ _ := And.intro h1 h2
       rw [h1, h2]
       simp
     | disjunction _ _ _ _ h1 h2 =>
       simp only [isWellFormed]
-      have h : isWellFormed _ _ ∧ isWellFormed _ _ := And.intro h1 h2
       rw [h1, h2]
       simp
     | implication _ _ _ _ h1 h2 =>
       simp only [isWellFormed]
-      have h : isWellFormed _ _ ∧ isWellFormed _ _ := And.intro h1 h2
       rw [h1, h2]
       simp
     | universal _ _ h => 
@@ -135,29 +139,25 @@ theorem well_formed_iff_is_well_formed {env} {A} : WellFormed env A ↔ isWellFo
   . intros h
     induction A with
     | equality a b =>
-      simp only [isWellFormed] at h      
-      have := of_decide_eq_true h
-      cases this with | intro l r =>
+      simp only [isWellFormed, bool_and_iff_prop_and] at h      
+      cases h with | intro l r =>
       simp [Term.infer_type_iff_well_typed] at l
       simp [Term.infer_type_iff_well_typed] at r
     | conjunction A B h1 h2 =>
-      simp only [isWellFormed] at h
-      have := of_decide_eq_true h
-      cases this with | intro l r =>
+      simp only [isWellFormed, bool_and_iff_prop_and] at h
+      cases h with | intro l r =>
       have h3 := h1 l
       have h4 := h2 r
       exact WellFormed.conjunction A B h3 h4
     | disjunction A B h1 h2 =>
-      simp only [isWellFormed] at h
-      have := of_decide_eq_true h
-      cases this with | intro l r =>
+      simp only [isWellFormed, bool_and_iff_prop_and] at h
+      cases h with | intro l r =>
       have h3 := h1 l
       have h4 := h2 r
       exact WellFormed.disjunction A B h3 h4
     | implication A B h1 h2 =>
-      simp only [isWellFormed] at h
-      have := of_decide_eq_true h
-      cases this with | intro l r =>
+      simp only [isWellFormed, bool_and_iff_prop_and] at h
+      cases h with | intro l r =>
       have h3 := h1 l
       have h4 := h2 r
       exact WellFormed.implication A B h3 h4
