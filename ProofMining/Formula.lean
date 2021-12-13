@@ -114,9 +114,7 @@ theorem well_formed_iff_is_well_formed {env} {A} : WellFormed env A ↔ isWellFo
       simp only [isWellFormed]
       rw [Term.infer_type_iff_well_typed] at h1
       rw [Term.infer_type_iff_well_typed] at h2
-      simp
-      rw [h1, h2]
-      simp
+      simp [*, h1, h2]
     /-**FOR ALEX: All the cases below can be proved in the exact same way. Join them in a single general case**-/
     | conjunction _ _ _ _ h1 h2 =>
       simp only [isWellFormed]
