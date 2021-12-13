@@ -92,11 +92,13 @@ def isWellFormed (env : Environment) (A : Formula) : Bool := match env, A with
 | e, ∃∃ σ A => isWellFormed (σ :: e) A
 | _, falsum => true 
 
+
 #check @propext
 #check @Decidable.rec
 #check decide
 #check Option.isSome (some 0)
 #eval Option.isSome (some 0)
+#print Decidable
 
 theorem well_formed_iff_is_well_formed {env} {A} : WellFormed env A ↔ isWellFormed env A := by
   apply Iff.intro
@@ -131,7 +133,36 @@ theorem well_formed_iff_is_well_formed {env} {A} : WellFormed env A ↔ isWellFo
       simp only [isWellFormed]
       exact h
   . intros h
-    sorry
+    induction A with
+    | equality a b =>
+      simp only [isWellFormed] at h      
+      have := of_decide_eq_true h
+      cases this with | intro l r =>
+      simp [Term.infer_type_iff_well_typed] at l
+      simp [Term.infer_type_iff_well_typed] at r
+    | conjunction A B h1 h2 =>
+      simp only [isWellFormed] at h
+      have := of_decide_eq_true h
+      cases this with | intro l r =>
+      have h3 := h1 l
+      have h4 := h2 r
+      exact WellFormed.conjunction A B h3 h4
+    | disjunction A B h1 h2 =>
+      simp only [isWellFormed] at h
+      have := of_decide_eq_true h
+      cases this with | intro l r =>
+      have h3 := h1 l
+      have h4 := h2 r
+      exact WellFormed.disjunction A B h3 h4
+    | implication A B h1 h2 =>
+      simp only [isWellFormed] at h
+      have := of_decide_eq_true h
+      cases this with | intro l r =>
+      have h3 := h1 l
+      have h4 := h2 r
+      exact WellFormed.implication A B h3 h4
+    | universal ρ A h1 =>
+      simp only [isWellFormed] at h
 
 instance {env : Environment} {A : Formula} : Decidable $ WellFormed env A := 
   if h : isWellFormed env A
