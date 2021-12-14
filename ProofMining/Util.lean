@@ -32,8 +32,16 @@ namespace List
 
   infix:50 " <+ " => Sublist
 
+  structure Embedding (xs ys : List α) where 
+    emb : Nat → Nat 
+    emb_ok : xs.nth i = some x → ys.nth i = some x
+    
+
 end List 
 
 
 macro "TODO_ALEX" : term => `(sorry)
 macro "TODO_ALEX" : tactic => `(sorry)
+
+macro "TODO_HORATIU" : term => `(sorry)
+macro "TODO_HORATIU" : tactic => `(sorry)

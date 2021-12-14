@@ -121,9 +121,7 @@ theorem well_formed_iff_is_well_formed {env} {A} : WellFormed env A ↔ isWellFo
       rw [h1, h2]
       simp
     | disjunction _ _ _ _ h1 h2 =>
-      simp only [isWellFormed]
-      rw [h1, h2]
-      simp
+      simp only [*, isWellFormed]
     | implication _ _ _ _ h1 h2 =>
       simp only [isWellFormed]
       rw [h1, h2]
@@ -166,3 +164,9 @@ instance {env : Environment} {A : Formula} : Decidable $ WellFormed env A :=
   if h : isWellFormed env A
     then Decidable.isTrue (by rw [well_formed_iff_is_well_formed]; exact h) 
     else Decidable.isFalse (by rw [well_formed_iff_is_well_formed]; exact h)
+
+
+theorem subst_well_formed {env : Environment} {A : Formula} {i : Nat} {t : Term} {ρ : FiniteType} : 
+  WellFormed env A → env.nth i = some ρ → Term.WellTyped env t ρ → WellFormed env (A.subst i t) := TODO_ALEX
+
+theorem weakening {e₁ e₂ : Environment} {A : Formula} : List.Embedding e₁ e₂ → WellFormed e₁ A → WellFormed e₂ A := TODO_ALEX

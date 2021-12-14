@@ -27,7 +27,6 @@ namespace Term
 
 instance : Coe Nat Term := ⟨var⟩
 
-
 infixl:80 "#" => app
 
 -- raise all variables above `cutoff` by `place` indices
@@ -77,7 +76,6 @@ inductive WellTyped (env : Environment) : Term → FiniteType → Prop
 | recursorOne ρ : WellTyped env (recursorOne ρ) (recursorOneExpend ρ)
 
 notation env " ⊢ " t " : " ρ:max => WellTyped env t ρ
-
 
 
 /-
@@ -186,15 +184,16 @@ theorem subst_well_typed {env} {t s} {ρ σ} {i} :
   If a term has a type in an environment, then it has that same type in any larger environment
 -/
 
-theorem weakening {t} : WellTyped e₁ t ρ → e₁ <+ e₂ → WellTyped e₂ t ρ := by 
+theorem weakening {t} : WellTyped e₁ t ρ → List.Embedding e₁ e₂ → WellTyped e₂ t ρ := by 
   intros wt₁ wt₂
   induction t generalizing ρ with 
   | var j => 
-    sorry -- immediate but we need lemma about list inclusions
+    TODO_ALEX
   | app u v ihu ihv => 
     cases wt₁ with | app _ _ τ _ wtu wtv => 
     exact WellTyped.app _ _ _ _ (ihu wtu) (ihv wtv)
   | _ => cases wt₁; constructor
+
 
 
 
