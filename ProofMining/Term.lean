@@ -44,6 +44,15 @@ fun term => match term with
 | recursorOne ρ => recursorOne ρ
 
 
+def downShift (place : Nat) (cutoff : Nat := 0) : Term → Term 
+| var i => if i < cutoff then var i else var $ i - place 
+| app t u => app (t.downShift place cutoff) (u.downShift place cutoff)
+| zero => zero 
+| successor => successor 
+| kcomb ρ τ => kcomb ρ τ     
+| scomb ρ σ τ => scomb ρ σ τ 
+| recursorOne ρ => recursorOne ρ  
+
 /-
   `subst t i s` is the substitution of the occurrences of `i` by the term `s` in the term `t`
   A good notation could be something like t[s // i], TO FIND A GOOD NOTATION
