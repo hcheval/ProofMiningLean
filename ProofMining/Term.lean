@@ -27,7 +27,7 @@ namespace Term
 
 instance : Coe Nat Term := ⟨var⟩
 
-infixl:80 "#" => app
+infixl:80 " # " => app
 
 -- raise all variables above `cutoff` by `place` indices
 def shift (place : Nat) (cutoff : Nat := 0) : Term → Term :=

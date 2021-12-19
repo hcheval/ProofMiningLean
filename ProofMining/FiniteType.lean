@@ -4,7 +4,8 @@ inductive FiniteType where
 | application : FiniteType → FiniteType → FiniteType
 deriving Repr, DecidableEq, Inhabited
 
-infixr:60 "↣" => FiniteType.application
+notation "𝕆" => FiniteType.zero
+infixr:60 " ↣ " => FiniteType.application
 
 def FiniteType.deg : FiniteType → Nat
   | FiniteType.zero => 0
