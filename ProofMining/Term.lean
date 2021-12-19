@@ -28,6 +28,9 @@ namespace Term
 instance : Coe Nat Term := ⟨var⟩
 
 infixl:80 " # " => app
+notation "K" => kcomb
+notation "S" => scomb
+notation "R" => recursorOne
 
 -- raise all variables above `cutoff` by `place` indices
 def shift (place : Nat) (cutoff : Nat := 0) : Term → Term :=
@@ -196,7 +199,8 @@ theorem weakening {t} : WellTyped e₁ t ρ → List.Embedding e₁ e₂ → Wel
     exact WellTyped.app _ _ _ _ (ihu wtu) (ihv wtv)
   | _ => cases wt₁; constructor
 
-
+def idcomb (ρ : FiniteType) : Term := S ρ (0 ↣ ρ) ρ # K ρ (0 ↣ ρ) # K ρ 0
+notation "I" => idcomb
 
 
 
@@ -214,3 +218,4 @@ theorem weakening {t} : WellTyped e₁ t ρ → List.Embedding e₁ e₂ → Wel
 -- | successor : Term env (FiniteType.zero ↣ FiniteType.zero)
 -- | kcomb {ρ σ : FiniteType} : Term env (ρ ↣ σ ↣ ρ)
 -- | scomb {ρ σ τ : FiniteType} : Term env $ (ρ ↣ σ ↣ τ) ↣ (ρ ↣ σ) ↣ ρ ↣ τ
+

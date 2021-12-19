@@ -7,9 +7,7 @@ open Lean PrettyPrinter Delaborator SubExpr
 open Term
 
 
-notation "K" => kcomb
-notation "S" => scomb
-notation "R" => recursorOne
+
 
 @[delab app.Term.kcomb]
 def delabK : Delab := do 
@@ -44,3 +42,13 @@ def delabR : Delab := do
     then `(R $ρ)
     else `(R)
 
+
+@[delab app.Term.idcomb]
+def delabI : Delab := do 
+  let printTypes ← getBoolOption print_types.name 
+  let e ← getExpr 
+  guard $ e.getAppNumArgs == 1 
+  let ρ ← withAppArg Delaborator.delab 
+  if printTypes 
+    then `(I $ρ)
+    else `(I)
