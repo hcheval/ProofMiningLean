@@ -2,7 +2,10 @@
 inductive FiniteType where
 | zero : FiniteType
 | application : FiniteType → FiniteType → FiniteType
-deriving Repr, DecidableEq, Inhabited
+| void : FiniteType 
+deriving Repr, DecidableEq
+
+instance : Inhabited FiniteType := ⟨FiniteType.void⟩
 
 notation "𝕆" => FiniteType.zero
 infixr:60 " ↣ " => FiniteType.application
@@ -10,6 +13,7 @@ infixr:60 " ↣ " => FiniteType.application
 def FiniteType.deg : FiniteType → Nat
   | FiniteType.zero => 0
   | FiniteType.application ρ τ => Nat.max (deg τ) ((deg ρ) + 1)
+  | FiniteType.void => 0
 
 #eval FiniteType.deg (FiniteType.zero ↣ FiniteType.zero ↣ FiniteType.zero ↣ FiniteType.zero)
 

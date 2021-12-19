@@ -39,6 +39,14 @@ namespace List
 
 end List 
 
+namespace Option 
+
+  def get!! {α : Type _} [Inhabited α] : Option α → α
+  | some x => x
+  | none => Inhabited.default
+
+end Option 
+
 
 macro "TODO_ALEX" : term => `(sorry)
 macro "TODO_ALEX" : tactic => `(sorry)

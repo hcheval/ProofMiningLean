@@ -82,6 +82,7 @@ notation e "wf⊢" A:max => WellFormed e A
 def highereq : FiniteType → Term → Term → Formula
 | ρ ↣ τ, s, t => universal ρ (highereq τ (Term.app (s.shift 1) $ Term.var $ 0) (Term.app (t.shift 1) $ Term.var $ 0))
 | 0, s, t => equality s t
+| FiniteType.void, _, _ => falsum
 
 
 def isWellFormed (env : Environment) (A : Formula) : Bool := match env, A with 
