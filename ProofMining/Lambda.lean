@@ -3,14 +3,8 @@ import ProofMining.TermPrettyPrinter
 
 open Term
 
-
-
-
-def I (ρ : FiniteType) : Term := S ρ (0 ↣ ρ) ρ # K ρ (0 ↣ ρ) # K ρ 0
-
 set_option print_types false
 
-#reduce I
 
 -- def K₂ (ρ τ : FiniteType) : Term := K (τ ↣ τ) ρ # I τ
 
@@ -24,26 +18,36 @@ def hasFV (t : Term) (i : Nat) : Bool := match t with
 | app u v => hasFV u i || hasFV v i
 | _ => false
 
+open FiniteType (void)
+
 def lambda (env : Environment) (src : FiniteType) (t : Term) : Term := 
-  if h : !hasFV t 0 
-    then K (inferType env t).get!! src # t.downShift 1
-    else match t with 
-    | var 0 => I src 
-    | var (i + 1) => K (inferType env (i + 1 : Nat)).get!! src # (i + 1 : Nat)
-    | app u v => app (lambda env src u) (lambda env src v)
-    -- ???the following cases whould be simply defined by exfalso, but how do we write that???
-    | kcomb ρ τ => K (inferType env $ K ρ τ).get!! src # (K ρ τ)
-    | scomb ρ τ σ => K (inferType env $ S ρ τ σ).get!! src # (S ρ τ σ)
-    | zero => K (inferType env zero).get!! src # zero 
-    | successor => K (inferType env successor).get!! src # successor 
-    | recursorOne ρ => K (inferType env $ R ρ).get!! src # (R ρ)
+match t with 
+| var 0 => I src
+| var (i + 1) => K void void # i
+| app u v => S void void void # (lambda env src u) # (lambda env src v)
+| K ρ τ => K void void # K ρ τ
+| S ρ τ δ => K void void # S ρ τ δ 
+| zero => K void void # zero 
+| successor => K void void # successor  
+| R ρ => K void void # R ρ
   
 
 def l : Term := lambda [𝕆, 𝕆] 𝕆 (lambda [𝕆, 𝕆] 𝕆 (var 1))
 def l' : Term := lambda [] 𝕆 (I 𝕆)
 #reduce l
 
+def K₂ (ρ τ) := lambda [] ρ $ lambda [] τ 0
 
-theorem beta_reduction (env : Environment) : (lambda env ρ t) # s = t.subst 0 s := sorry
+def x : Term := K₂ 𝕆 𝕆 # Term.zero # Term.successor 
+
+def proj₁₃ (ρ τ σ : FiniteType) : Term := lambda [] ρ (lambda [] τ (lambda [] σ 0))
+
+-- #reduce proj₁₃
+
+#reduce iterate reduceOneStep 11 $ proj₁₃ 𝕆 𝕆 𝕆 # (Term.successor) # (Term.successor) # Term.zero
+
+#reduce iterate reduceOneStep 3 x
+
+-- theorem beta_reduction (env : Environment) : (lambda env ρ t) # s = t.subst 0 s := sorry
 
 

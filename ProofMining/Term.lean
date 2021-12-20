@@ -44,14 +44,14 @@ fun term => match term with
 | recursorOne ρ => recursorOne ρ
 
 
-def downShift (place : Nat) (cutoff : Nat := 0) : Term → Term 
-| var i => if i < cutoff then var i else var $ i - place 
-| app t u => app (t.downShift place cutoff) (u.downShift place cutoff)
-| zero => zero 
-| successor => successor 
-| kcomb ρ τ => kcomb ρ τ     
-| scomb ρ σ τ => scomb ρ σ τ 
-| recursorOne ρ => recursorOne ρ  
+-- def downShift (place : Nat := 1) (cutoff : Nat := 0) : Term → Term 
+-- | var i => if i < cutoff then var i else var $ i - place 
+-- | app t u => app (t.downShift place cutoff) (u.downShift place cutoff)
+-- | zero => zero 
+-- | successor => successor 
+-- | kcomb ρ τ => kcomb ρ τ     
+-- | scomb ρ σ τ => scomb ρ σ τ 
+-- | recursorOne ρ => recursorOne ρ  
 
 /-
   `subst t i s` is the substitution of the occurrences of `i` by the term `s` in the term `t`
@@ -211,7 +211,14 @@ theorem weakening {t} : WellTyped e₁ t ρ → List.Embedding e₁ e₂ → Wel
 def idcomb (ρ : FiniteType) : Term := S ρ (0 ↣ ρ) ρ # K ρ (0 ↣ ρ) # K ρ 0
 notation "I" => idcomb
 
-
+-- reduction rule for terms in SKI-calculus 
+-- **QUESTION:** how do we prove strong normalization?
+@[simp]
+def reduceOneStep : Term → Term 
+| K _ _ # t # _ => t 
+| S _ _ _ # t # u # v => t # v # (u # v)
+| t # u => t.reduceOneStep # u.reduceOneStep
+| x => x
 
 /-
   Intrinsically typed terms.
@@ -227,4 +234,3 @@ notation "I" => idcomb
 -- | successor : Term env (FiniteType.zero ↣ FiniteType.zero)
 -- | kcomb {ρ σ : FiniteType} : Term env (ρ ↣ σ ↣ ρ)
 -- | scomb {ρ σ τ : FiniteType} : Term env $ (ρ ↣ σ ↣ τ) ↣ (ρ ↣ σ) ↣ ρ ↣ τ
-

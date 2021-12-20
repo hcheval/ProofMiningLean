@@ -65,9 +65,9 @@ inductive Proof (Γ : List Formula) : Formula →  Type
 -- | exFalso (e : Environment) (Γ : List Formula) (A : Formula) : 
 --   WellFormed e A → Proof e Γ (falsum ⟹ A)
 -- | universalAxiom (e : Environment) (Γ : List Formula) (ρ : FiniteType) (A : Formula) (t : Term) : 
---   WellFormed (ρ :: e) A → wellTyped e t ρ → Proof e Γ (∀∀ ρ A ⟹ Formula.subst A 0 t)
+--   WellFormed (ρ :: e) A → WellTyped e t ρ → Proof e Γ (∀∀ ρ A ⟹ Formula.subst A 0 t)
 -- | existentialAxiom (ρ : FiniteType) (A : Formula) (t : Term) : 
---   WellFormed (ρ :: e) A → wellTyped e t ρ → Proof e Γ (Formula.subst A 0 t ⟹ ∃∃ ρ A)
+--   WellFormed (ρ :: e) A → WellTyped e t ρ → Proof e Γ (Formula.subst A 0 t ⟹ ∃∃ ρ A)
 -- | mpon (e : Environment) (Γ : List Formula) {A B : Formula} : 
 --   WellFormed e A → WellFormed e B → Proof e Γ A → Proof e Γ (A ⟹ B) → Proof e Γ B
 -- | syllogism (e : Environment) (Γ : List Formula) {A B C : Formula} : 

@@ -47,6 +47,10 @@ namespace Option
 
 end Option 
 
+def iterate {α : Sort _} (op : α → α) (n : Nat) (a : α) : α :=
+match n with 
+| 0 => a 
+| n + 1 => op (iterate op n a)
 
 macro "TODO_ALEX" : term => `(sorry)
 macro "TODO_ALEX" : tactic => `(sorry)
