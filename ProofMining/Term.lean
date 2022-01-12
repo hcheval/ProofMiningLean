@@ -140,7 +140,15 @@ def inferType : Environment → Term → Option FiniteType
 /-
   Sanity check for the above definitions. Show they define the same thing.
 -/
-theorem infer_type_iff_well_typed (env : Environment) (t : Term) (σ : FiniteType) : 
+
+def getAppSource {env : Environment} {u v : Term} {σ : FiniteType} : 
+  inferType env (u # v) = some σ → FiniteType := sorry 
+
+theorem app_source_correct {env : Environment} {u v : Term} {σ : FiniteType} (h : inferType env (u # v) = some σ): 
+  inferType env v = some (getAppSource h) ∧ inferType env u = some ((getAppSource h) ↣ σ) := sorry
+
+
+theorem infer_type_iff_well_typed {env : Environment} {t : Term} {σ : FiniteType} : 
   WellTyped env t σ ↔ inferType env t = some σ := by
   apply Iff.intro
   . intros wt
@@ -151,11 +159,29 @@ theorem infer_type_iff_well_typed (env : Environment) (t : Term) (σ : FiniteTyp
       simp only [inferType]
       exact h
     | _ => simp only [inferType]
-  . sorry
+  . intros h
+    induction t generalizing σ with
+    | var i => 
+      simp only [inferType] at h
+      constructor
+      assumption
+    | app u v ihu ihv => 
+      have := app_source_correct h
+      cases this with | intro hρl hρr => 
+      specialize ihu hρr
+      specialize ihv hρl
+      constructor <;> assumption
+    | _ => 
+      simp [inferType] at h
+      rw [←h]
+      constructor
+
+
+-- inferType (u # v) = some σ   →    inferType u = ρ ↣ σ    ∧     inferType v = ρ 
 
 
 @[simp]
-def isWellTyped (env : Environment) (t : Term) := Option.isSome $ inferType env t
+def isWellTyped (env : Environment) (t : Term) : Bool := Option.isSome $ inferType env t
 
 
 /-

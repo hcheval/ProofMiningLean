@@ -40,11 +40,11 @@ def K₂ (ρ τ) := lambda [] ρ $ lambda [] τ 0
 
 def x : Term := K₂ 𝕆 𝕆 # Term.zero # Term.successor 
 
-def proj₁₃ (ρ τ σ : FiniteType) : Term := lambda [] ρ (lambda [] τ (lambda [] σ 0))
+def proj₁₃ (ρ τ σ : FiniteType) : Term := lambda [] ρ (lambda [] τ (lambda [] σ 1))
 
 -- #reduce proj₁₃
 
-#reduce iterate reduceOneStep 11 $ proj₁₃ 𝕆 𝕆 𝕆 # (Term.successor) # (Term.successor) # Term.zero
+#reduce iterate reduceOneStep 11 $ proj₁₃ 𝕆 𝕆 𝕆 # (Term.zero) # (Term.successor) # Term.successor
 
 #reduce iterate reduceOneStep 3 x
 
