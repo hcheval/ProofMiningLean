@@ -32,13 +32,21 @@ namespace List
 
   infix:50 " <+ " => Sublist
 
+  /-
+    An embedding from the list `xs` to the list `ys`
+  -/
   structure Embedding (xs ys : List α) where 
     emb : Nat → Nat 
     emb_ok : xs.nth i = some x → ys.nth i = some x
-    
 
 end List 
 
+
+
+def iterate {α : Sort _} (op : α → α) (n : Nat) (a : α) : α :=
+match n with 
+| 0 => a 
+| n + 1 => op (iterate op n a)
 
 macro "TODO_ALEX" : term => `(sorry)
 macro "TODO_ALEX" : tactic => `(sorry)

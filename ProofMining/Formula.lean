@@ -76,6 +76,7 @@ inductive WellFormed : Environment → Formula → Prop
 | implication (A B) : WellFormed e A → WellFormed e B → WellFormed e (A ⟹ B)
 | universal (A) : WellFormed (ρ :: e) A → WellFormed e (∀∀ ρ A)
 | existential (A) : WellFormed (ρ :: e) A → WellFormed e (∃∃ ρ A)
+| falsum : WellFormed e falsum
 
 notation e "wf⊢" A:max => WellFormed e A
 
@@ -85,7 +86,7 @@ def highereq : FiniteType → Term → Term → Formula
 
 
 def isWellFormed (env : Environment) (A : Formula) : Bool := match env, A with 
-| e, t ≅ s => Term.isWellTyped env t && Term.isWellTyped env s
+| e, t ≅ s => Term.inferType env t = some 𝕆 && Term.inferType env s = some 𝕆
 | e, A ⋀ B => isWellFormed env A && isWellFormed env B 
 | e, A ⋁ B => isWellFormed env A && isWellFormed env B 
 | e, A ⟹ B => isWellFormed env A && isWellFormed env B 
@@ -104,41 +105,26 @@ def isWellFormed (env : Environment) (A : Formula) : Bool := match env, A with
 @[simp]
 theorem bool_and_iff_prop_and {x y : Bool} : (x && y) = true ↔ x = true ∧ y = true := by 
   cases x <;> cases y <;> simp
-  
+
+
+#check decide
 
 theorem well_formed_iff_is_well_formed {env} {A} : WellFormed env A ↔ isWellFormed env A := by
   apply Iff.intro
   . intros h
     induction h with
-    | equality h1 h2 =>
+    | @equality env u v hu hv =>
       simp only [isWellFormed]
-      rw [Term.infer_type_iff_well_typed] at h1
-      rw [Term.infer_type_iff_well_typed] at h2
-      simp [h1, h2]
-    /-**FOR ALEX: All the cases below can be proved in the exact same way. Join them in a single general case**-/
-    | conjunction _ _ _ _ h1 h2 =>
-      simp only [isWellFormed]
-      rw [h1, h2]
-      simp
-    | disjunction _ _ _ _ h1 h2 =>
-      simp only [*, isWellFormed]
-    | implication _ _ _ _ h1 h2 =>
-      simp only [isWellFormed]
-      rw [h1, h2]
-      simp
-    | universal _ _ h => 
-      simp only [isWellFormed]
-      exact h
-    | existential _ _ h => 
-      simp only [isWellFormed]
-      exact h
+      rw [Term.infer_type_iff_well_typed] at hu hv
+      simp [hu, hv]
+      apply And.intro <;> exact decide_eq_true (by assumption)
+    | _ => simp only [isWellFormed, *]
   . intros h
-    induction A with
+    induction A generalizing env with
     | equality a b =>
       simp only [isWellFormed, bool_and_iff_prop_and] at h      
       cases h with | intro l r =>
-      simp [Term.infer_type_iff_well_typed] at l
-      simp [Term.infer_type_iff_well_typed] at r
+      constructor <;> { rw [Term.infer_type_iff_well_typed]; exact of_decide_eq_true (by assumption) }
     | conjunction A B h1 h2 =>
       simp only [isWellFormed, bool_and_iff_prop_and] at h
       cases h with | intro l r =>
@@ -159,6 +145,16 @@ theorem well_formed_iff_is_well_formed {env} {A} : WellFormed env A ↔ isWellFo
       exact WellFormed.implication A B h3 h4
     | universal ρ A h1 =>
       simp only [isWellFormed] at h
+      constructor
+      specialize h1 h
+      exact h1
+    | existential ρ A h1 =>
+      simp only [isWellFormed] at h
+      constructor
+      specialize h1 h
+      exact h1
+    | falsum => 
+      constructor  
 
 instance {env : Environment} {A : Formula} : Decidable $ WellFormed env A := 
   if h : isWellFormed env A

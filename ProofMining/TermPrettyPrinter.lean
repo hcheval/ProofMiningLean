@@ -7,8 +7,8 @@ open Lean PrettyPrinter Delaborator SubExpr
 open Term
 
 
-notation "K" => kcomb
-notation "S" => scomb
+-- notation "K" => kcomb
+-- notation "S" => scomb
 
 @[delab app.Term.kcomb]
 def delabK : Delab := do 

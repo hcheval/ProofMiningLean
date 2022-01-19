@@ -28,6 +28,9 @@ namespace Term
 instance : Coe Nat Term := ⟨var⟩
 
 infixl:80 " # " => app
+notation "K" => kcomb
+notation "S" => scomb
+notation "R" => recursorOne
 
 -- raise all variables above `cutoff` by `place` indices
 def shift (place : Nat) (cutoff : Nat := 0) : Term → Term :=
@@ -57,19 +60,11 @@ def subst : Term → Nat → Term → Term
 def finiteTypeExpanderForRecursor (ρ : FiniteType) (ρ₁ : FiniteType) : FiniteType → FiniteType
 | τ ↣ δ => (ρ ↣ 0 ↣ τ) ↣ finiteTypeExpanderForRecursor ρ ρ₁ δ
 | 0 => ρ₁
-<<<<<<< Updated upstream
-=======
--- | void => void
->>>>>>> Stashed changes
 
 def recursorOneExpend (ρ : FiniteType) : FiniteType := 
 match ρ with
   | τ ↣ δ => 0 ↣ ρ ↣ finiteTypeExpanderForRecursor ρ τ ρ
   | 0 => sorry
-<<<<<<< Updated upstream
-=======
-  -- | void => void
->>>>>>> Stashed changes
 
 /-
   `WellTyped env t σ` means that t has type σ in the environment `env`
@@ -132,29 +127,27 @@ def inferType : Environment → Term → Option FiniteType
   | env, kcomb ρ σ => some (ρ ↣ σ ↣ ρ)
   | env, scomb ρ σ τ => some ((ρ ↣ σ ↣ τ) ↣ (ρ ↣ σ) ↣ ρ ↣ τ) 
   | env, recursorOne ρ => some $ recursorOneExpend ρ
-/-
-  Sanity check for the above definitions. Show they define the same thing.
--/
-<<<<<<< Updated upstream
-theorem infer_type_iff_well_typed (env : Environment) (t : Term) (σ : FiniteType) : 
-=======
 
-
-
+  
+  
 def getAppSource {env : Environment} {u v : Term} {σ : FiniteType} : 
   inferType env (u # v) = some σ → FiniteType := 
   fun h => let ρ := inferType env u 
   match h':ρ with 
-  | ρ₁ ↣ ρ₂ => ρ₁ 
+  | ρ₁ ↣ ρ₂ => ρ₁
   | 𝕆 => False.elim (by simp [*] at h)
   | none => False.elim (by simp [*] at h)
 
 theorem app_source_correct {env : Environment} {u v : Term} {σ : FiniteType} (h : inferType env (u # v) = some σ): 
   inferType env v = some (getAppSource h) ∧ inferType env u = some ((getAppSource h) ↣ σ) := sorry
 
-
-theorem infer_type_iff_well_typed {env : Environment} {t : Term} {σ : FiniteType} : 
->>>>>>> Stashed changes
+  
+  
+  
+/-
+  Sanity check for the above definitions. Show they define the same thing.
+-/
+theorem infer_type_iff_well_typed (env : Environment) (t : Term) (σ : FiniteType) : 
   WellTyped env t σ ↔ inferType env t = some σ := by
   apply Iff.intro
   . intros wt
@@ -165,7 +158,22 @@ theorem infer_type_iff_well_typed {env : Environment} {t : Term} {σ : FiniteTyp
       simp only [inferType]
       exact h
     | _ => simp only [inferType]
-  . sorry
+  . intros h
+    induction t generalizing σ with
+    | var i => 
+      simp only [inferType] at h
+      constructor
+      assumption
+    | app u v ihu ihv => 
+      have := app_source_correct h
+      cases this with | intro hρl hρr => 
+      specialize ihu _ hρr
+      specialize ihv _ hρl
+      constructor <;> assumption
+    | _ => 
+      simp [inferType] at h
+      rw [←h]
+      constructor
 
 
 @[simp]
@@ -212,15 +220,15 @@ theorem subst_well_typed {env} {t s} {ρ σ} {i} :
   If a term has a type in an environment, then it has that same type in any larger environment
 -/
 
-theorem weakening {t} : WellTyped e₁ t ρ → List.Embedding e₁ e₂ → WellTyped e₂ t ρ := by 
-  intros wt₁ wt₂
-  induction t generalizing ρ with 
-  | var j => 
-    TODO_ALEX
-  | app u v ihu ihv => 
-    cases wt₁ with | app _ _ τ _ wtu wtv => 
-    exact WellTyped.app _ _ _ _ (ihu wtu) (ihv wtv)
-  | _ => cases wt₁; constructor
+-- theorem weakening {t} : WellTyped e₁ t ρ → List.Embedding e₁ e₂ → WellTyped e₂ t ρ := by 
+--   intros wt₁ wt₂
+--   induction t generalizing ρ with 
+--   | var j => 
+--     TODO_ALEX
+--   | app u v ihu ihv => 
+--     cases wt₁ with | app _ _ τ _ wtu wtv => 
+--     exact WellTyped.app _ _ _ _ (ihu wtu) (ihv wtv)
+--   | _ => cases wt₁; constructor
 
 
 
@@ -240,3 +248,17 @@ theorem weakening {t} : WellTyped e₁ t ρ → List.Embedding e₁ e₂ → Wel
 -- | successor : Term env (FiniteType.zero ↣ FiniteType.zero)
 -- | kcomb {ρ σ : FiniteType} : Term env (ρ ↣ σ ↣ ρ)
 -- | scomb {ρ σ τ : FiniteType} : Term env $ (ρ ↣ σ ↣ τ) ↣ (ρ ↣ σ) ↣ ρ ↣ τ
+
+
+
+def idcomb (ρ : FiniteType) : Term := S ρ (0 ↣ ρ) ρ # K ρ (0 ↣ ρ) # K ρ 0
+notation "I" => idcomb
+
+-- reduction rule for terms in SKI-calculus 
+-- **QUESTION:** how do we prove strong normalization?
+@[simp]
+def reduceOneStep : Term → Term 
+| K _ _ # t # _ => t 
+| S _ _ _ # t # u # v => t # v # (u # v)
+| t # u => t.reduceOneStep # u.reduceOneStep
+| x => x
