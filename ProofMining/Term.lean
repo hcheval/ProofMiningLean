@@ -57,11 +57,19 @@ def subst : Term → Nat → Term → Term
 def finiteTypeExpanderForRecursor (ρ : FiniteType) (ρ₁ : FiniteType) : FiniteType → FiniteType
 | τ ↣ δ => (ρ ↣ 0 ↣ τ) ↣ finiteTypeExpanderForRecursor ρ ρ₁ δ
 | 0 => ρ₁
+<<<<<<< Updated upstream
+=======
+-- | void => void
+>>>>>>> Stashed changes
 
 def recursorOneExpend (ρ : FiniteType) : FiniteType := 
 match ρ with
   | τ ↣ δ => 0 ↣ ρ ↣ finiteTypeExpanderForRecursor ρ τ ρ
   | 0 => sorry
+<<<<<<< Updated upstream
+=======
+  -- | void => void
+>>>>>>> Stashed changes
 
 /-
   `WellTyped env t σ` means that t has type σ in the environment `env`
@@ -104,6 +112,7 @@ def inferTypeAppAux : Option FiniteType → Option FiniteType → Option FiniteT
 | ρ ↣ τ, σ => if ρ = σ then some τ else none 
 | _, _ => none
 
+@[simp]
 def inferType : Environment → Term → Option FiniteType
   | env, var x => List.nth env x
   | env, app x y => inferTypeAppAux (inferType env x) (inferType env y)
@@ -126,7 +135,26 @@ def inferType : Environment → Term → Option FiniteType
 /-
   Sanity check for the above definitions. Show they define the same thing.
 -/
+<<<<<<< Updated upstream
 theorem infer_type_iff_well_typed (env : Environment) (t : Term) (σ : FiniteType) : 
+=======
+
+
+
+def getAppSource {env : Environment} {u v : Term} {σ : FiniteType} : 
+  inferType env (u # v) = some σ → FiniteType := 
+  fun h => let ρ := inferType env u 
+  match h':ρ with 
+  | ρ₁ ↣ ρ₂ => ρ₁ 
+  | 𝕆 => False.elim (by simp [*] at h)
+  | none => False.elim (by simp [*] at h)
+
+theorem app_source_correct {env : Environment} {u v : Term} {σ : FiniteType} (h : inferType env (u # v) = some σ): 
+  inferType env v = some (getAppSource h) ∧ inferType env u = some ((getAppSource h) ↣ σ) := sorry
+
+
+theorem infer_type_iff_well_typed {env : Environment} {t : Term} {σ : FiniteType} : 
+>>>>>>> Stashed changes
   WellTyped env t σ ↔ inferType env t = some σ := by
   apply Iff.intro
   . intros wt
