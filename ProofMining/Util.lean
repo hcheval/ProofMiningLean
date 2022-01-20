@@ -20,7 +20,7 @@ namespace List
 
   instance {α : Type _} : Mem α (List α) := ⟨mem⟩
 
-  def nth : List α → Nat → Option α 
+  @[simp] def nth : List α → Nat → Option α 
   | [], _ => none
   | a :: _, 0 => a
   | _ :: l, n + 1 => nth l n
@@ -35,11 +35,29 @@ namespace List
   /-
     An embedding from the list `xs` to the list `ys`
   -/
+  -- structure Embedding (xs ys : List α) where 
+  --   emb : Nat → Nat 
+  --   emb_ok : xs.nth i = some x → ys.nth i = some x
+
+  /-
+    An embedding of the list `xs` into the list `ys` 
+    is a mapping `emb` between indices preserving mapping the elements in `xs` 
+    to an equal element in `ys`
+  -/
   structure Embedding (xs ys : List α) where 
     emb : Nat → Nat 
-    emb_ok : xs.nth i = some x → ys.nth i = some x
+    emb_inj : xs.nth i = some x → ys.nth (emb i) = some x
 
 end List 
+
+
+namespace Option 
+
+  @[simp] def get!! {α : Type _} [Inhabited α] : Option α → α 
+  | some x => x
+  | none => Inhabited.default
+
+end Option
 
 
 

@@ -43,7 +43,6 @@ fun term => match term with
 | scomb ρ σ τ => scomb ρ σ τ
 | recursorOne ρ => recursorOne ρ
 
-
 /-
   `subst t i s` is the substitution of the occurrences of `i` by the term `s` in the term `t`
   A good notation could be something like t[s // i], TO FIND A GOOD NOTATION
@@ -64,7 +63,7 @@ def finiteTypeExpanderForRecursor (ρ : FiniteType) (ρ₁ : FiniteType) : Finit
 def recursorOneExpend (ρ : FiniteType) : FiniteType := 
 match ρ with
   | τ ↣ δ => 0 ↣ ρ ↣ finiteTypeExpanderForRecursor ρ τ ρ
-  | 0 => sorry
+  | 0 => 0
 
 /-
   `WellTyped env t σ` means that t has type σ in the environment `env`
@@ -78,7 +77,7 @@ inductive WellTyped (env : Environment) : Term → FiniteType → Prop
 | scomb (ρ σ τ) : WellTyped env (scomb ρ σ τ) ((ρ ↣ σ ↣ τ) ↣ (ρ ↣ σ) ↣ ρ ↣ τ)
 | recursorOne ρ : WellTyped env (recursorOne ρ) (recursorOneExpend ρ)
 
-notation env " ⊢ " t " : " ρ:max => WellTyped env t ρ
+notation env " ⊢ʷᵗ " t " : " ρ:max => WellTyped env t ρ
 
 
 /-
@@ -102,10 +101,12 @@ notation env " ⊢ " t " : " ρ:max => WellTyped env t ρ
 -- | (ρ ↣ τ), (σ ↣ δ) => goodEq ρ σ && goodEq τ δ
 -- | _, _ => false
 
+
 @[simp]
 def inferTypeAppAux : Option FiniteType → Option FiniteType → Option FiniteType 
 | ρ ↣ τ, σ => if ρ = σ then some τ else none 
 | _, _ => none
+
 
 @[simp]
 def inferType : Environment → Term → Option FiniteType
@@ -127,9 +128,9 @@ def inferType : Environment → Term → Option FiniteType
   | env, kcomb ρ σ => some (ρ ↣ σ ↣ ρ)
   | env, scomb ρ σ τ => some ((ρ ↣ σ ↣ τ) ↣ (ρ ↣ σ) ↣ ρ ↣ τ) 
   | env, recursorOne ρ => some $ recursorOneExpend ρ
+  
 
-  
-  
+
 def getAppSource {env : Environment} {u v : Term} {σ : FiniteType} : 
   inferType env (u # v) = some σ → FiniteType := 
   fun h => let ρ := inferType env u 
@@ -172,8 +173,7 @@ theorem infer_type_iff_well_typed (env : Environment) (t : Term) (σ : FiniteTyp
       constructor <;> assumption
     | _ => 
       simp [inferType] at h
-      rw [←h]
-      constructor
+      try { rw [←h]; constructor }
 
 
 @[simp]
@@ -194,8 +194,6 @@ theorem unique_typing : WellTyped e t ρ → WellTyped e t σ → ρ = σ := by
 /-
   Substitution preserves typing
 -/
-
-
 theorem subst_well_typed {env} {t s} {ρ σ} {i} : 
   WellTyped env t ρ → env.nth i = some σ → WellTyped env s σ → WellTyped env (t.subst i s) ρ := by 
   intros wtt wti wts 
@@ -221,10 +219,12 @@ theorem subst_well_typed {env} {t s} {ρ σ} {i} :
 -/
 
 -- theorem weakening {t} : WellTyped e₁ t ρ → List.Embedding e₁ e₂ → WellTyped e₂ t ρ := by 
---   intros wt₁ wt₂
+--   intros wt₁ embedding
 --   induction t generalizing ρ with 
 --   | var j => 
---     TODO_ALEX
+--     cases wt₁
+--     constructor
+    
 --   | app u v ihu ihv => 
 --     cases wt₁ with | app _ _ τ _ wtu wtv => 
 --     exact WellTyped.app _ _ _ _ (ihu wtu) (ihv wtv)
