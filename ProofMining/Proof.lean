@@ -1,5 +1,6 @@
 import ProofMining.Formula
-import ProofMining.Util
+import ProofMining.Util 
+import ProofMining.Automation
 
 open Formula (falsum WellFormed highereq)
 open Term (WellTyped)
@@ -49,8 +50,6 @@ open Term (WellTyped)
   Just left here for the time being.
 -/
 
-macro "autowf" : tactic => 
-  `((repeat (try (any_goals constructor))); all_goals assumption)
 
 
 inductive Proof : Environment → List Formula →  Formula →  Type

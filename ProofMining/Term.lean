@@ -144,11 +144,10 @@ theorem app_source_correct {env : Environment} {u v : Term} {σ : FiniteType} (h
 
   
   
-  
 /-
   Sanity check for the above definitions. Show they define the same thing.
 -/
-theorem infer_type_iff_well_typed (env : Environment) (t : Term) (σ : FiniteType) : 
+theorem infer_type_iff_well_typed {env : Environment} {t : Term} {σ : FiniteType} : 
   WellTyped env t σ ↔ inferType env t = some σ := by
   apply Iff.intro
   . intros wt
@@ -168,8 +167,8 @@ theorem infer_type_iff_well_typed (env : Environment) (t : Term) (σ : FiniteTyp
     | app u v ihu ihv => 
       have := app_source_correct h
       cases this with | intro hρl hρr => 
-      specialize ihu _ hρr
-      specialize ihv _ hρl
+      specialize ihu hρr
+      specialize ihv hρl
       constructor <;> assumption
     | _ => 
       simp [inferType] at h
@@ -180,6 +179,11 @@ theorem infer_type_iff_well_typed (env : Environment) (t : Term) (σ : FiniteTyp
 def isWellTyped (env : Environment) (t : Term) := Option.isSome $ inferType env t
 
 
+def getAppSource' {env : Environment} {u v : Term} {σ : FiniteType} : WellTyped env (u # v) σ → FiniteType := 
+  fun wt => getAppSource $ infer_type_iff_well_typed.mp wt
+
+theorem app_source_correct' {env : Environment} {u v : Term} {σ : FiniteType} (h : WellTyped env (u # v) σ): 
+  WellTyped env v (getAppSource' h) ∧ WellTyped env u (getAppSource' h ↣ σ) := sorry
 /-
   A term can only have one type
 -/

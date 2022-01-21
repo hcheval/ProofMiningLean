@@ -66,9 +66,11 @@ theorem r50 {A B : Formula} (h₁ : e ;; Γ ⊢ A) (h₂ : e ;; Γ ⊢ B)
   let p₂ : e ;; Γ ⊢ B ⟹ A ⋀ B  := mpon h₁ p₁
   mpon h₂ p₂
 
--- theorem r42 {A : Formula} {ρ : FiniteType} (h₁ : e ;; Γ ⊢ A) : Γ ⊢ ∀∀ ρ A := 
---   let p₁ : Γ ⊢ A ⟹ A := syllogism (contrConj _) (weakConj _ _)
---   let p₂ : Γ ⊢ A ⟹ ∀∀ ρ A := universalRule ρ p₁
+-- theorem r42 {A : Formula} {ρ : FiniteType} (h₁ : (ρ :: e) ;; Γ ⊢ A) 
+--   (wfA : WellFormed (ρ :: e) A)
+--   : e ;; Γ ⊢ ∀∀ ρ A := 
+--   let p₁ : (ρ :: e) ;; Γ ⊢ A ⟹ A := syllogism (contrConj _) (weakConj _ _) _ _ _
+--   let p₂ : (ρ :: e) ;; Γ ⊢ A ⟹ ∀∀ ρ A := universalRule p₁
 --   mpon h₁ p₂
 
 -- theorem r47 {A : Formula} {ρ : FiniteType} {t : Term} (h₁ : Γ ⊢ ∀∀ ρ A) : Γ ⊢ Formula.subst A 0 t :=

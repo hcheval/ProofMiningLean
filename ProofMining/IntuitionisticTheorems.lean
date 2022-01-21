@@ -39,7 +39,7 @@ theorem t22 (A B : Formula) (_ : WellFormed e A := by autowf) (_ : WellFormed e 
 theorem t23 (A B : Formula) (_ : WellFormed e A := by autowf) (_ : WellFormed e B := by autowf) : 
   e ;; Γ ⊢ A ⟹ (B ⟹ A) :=
   let p₁ : e ;; Γ ⊢ (A ⋀ B) ⟹ A := weakConj
-  exportation p₁
+  exportation p₁ 
 
 theorem t24 (A : Formula) (_ : WellFormed e A := by autowf) : 
   e ;; Γ ⊢ (A ⟹ ∼∼A) :=
