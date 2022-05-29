@@ -24,7 +24,7 @@ def hasFV (t : Term) (i : Nat) : Bool := match t with
   how do we properly define this?
 -/
 
-
+namespace Lambda
 
 def lambda (env : Environment) (src : FiniteType) (t : Term) (σ : FiniteType) (wt : WellTyped (src :: env) t σ := by autowt) : Term := 
 match ht:t, hσ:σ, wt with 
@@ -56,6 +56,8 @@ match ht:t, hσ:σ, wt with
 -- | successor, _, _ => K _ src # successor
 -- | s@(R ρ), _, _ => K _ src # s
 
+
+
 def lambda' (env : Environment) (src : FiniteType) (t : Term) : Option Term :=
   let σ? := inferType (src :: env) t 
   match h:σ? with 
@@ -78,6 +80,7 @@ def proj₃₃ : Term := lambda [] 𝕆 (lambda [𝕆] 𝕆 (lambda [𝕆, 𝕆]
   The computational behavior (i.e. excluding typing) seems correct
 -/
 #reduce iterate reduceOneStep 11 (proj₃₃ # successor # zero # (R 𝕆))
+#reduce iterate reduceOneStep 11 (Term.recursorOne 0 # Term.zero # (Lambda.lambda [𝕆] 𝕆 (Lambda.lambda [𝕆, 𝕆] 𝕆 0 𝕆) (𝕆 ↣ 𝕆)) # (Term.var 0) )
 
 -- theorem lambda_fv : hasFV t (i + 1) → hasFV (lambda env src t). i := by 
 --   intros hfv 
@@ -95,8 +98,8 @@ def proj₃₃ : Term := lambda [] 𝕆 (lambda [𝕆] 𝕆 (lambda [𝕆, 𝕆]
 
 set_option print_types true
  
-theorem lambda_well_typed {env : Environment} {src : FiniteType} (t : Term) (ρ : FiniteType) (wt : WellTyped (src::env) t ρ) :
-  WellTyped env (lambda env src t ρ wt) (src ↣ ρ) := by 
+-- theorem lambda_well_typed {env : Environment} {src : FiniteType} (t : Term) (ρ : FiniteType) (wt : WellTyped (src::env) t ρ) :
+--   WellTyped env (lambda env src t ρ wt) (src ↣ ρ) := by 
   -- OLD PROOF NO LONGER WORKS
   -- intros h
   -- induction t generalizing ρ

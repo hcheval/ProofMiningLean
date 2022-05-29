@@ -56,14 +56,14 @@ def subst : Term → Nat → Term → Term
 | scomb ρ σ τ, _, _ => scomb ρ σ τ
 | recursorOne ρ, _, _ => recursorOne ρ
 
-def finiteTypeExpanderForRecursor (ρ : FiniteType) (ρ₁ : FiniteType) : FiniteType → FiniteType
-| τ ↣ δ => (ρ ↣ 0 ↣ τ) ↣ finiteTypeExpanderForRecursor ρ ρ₁ δ
-| 0 => ρ₁
+-- def finiteTypeExpanderForRecursor (ρ : FiniteType) (ρ₁ : FiniteType) : FiniteType → FiniteType
+-- | τ ↣ δ => (ρ ↣ 0 ↣ τ) ↣ finiteTypeExpanderForRecursor ρ ρ₁ δ
+-- | 0 => ρ₁
 
-def recursorOneExpend (ρ : FiniteType) : FiniteType := 
-match ρ with
-  | τ ↣ δ => 0 ↣ ρ ↣ finiteTypeExpanderForRecursor ρ τ ρ
-  | 0 => 0
+-- def recursorOneExpend (ρ : FiniteType) : FiniteType := 
+-- match ρ with
+--   | τ ↣ δ => 0 ↣ ρ ↣ finiteTypeExpanderForRecursor ρ τ ρ
+--   | 0 => 0
 
 /-
   `WellTyped env t σ` means that t has type σ in the environment `env`
@@ -75,7 +75,7 @@ inductive WellTyped (env : Environment) : Term → FiniteType → Prop
 | successor : WellTyped env successor 1
 | kcomb (ρ σ) : WellTyped env (kcomb ρ σ) (ρ ↣ σ ↣ ρ)
 | scomb (ρ σ τ) : WellTyped env (scomb ρ σ τ) ((ρ ↣ σ ↣ τ) ↣ (ρ ↣ σ) ↣ ρ ↣ τ)
-| recursorOne ρ : WellTyped env (recursorOne ρ) (recursorOneExpend ρ)
+| recursorOne ρ : WellTyped env (recursorOne ρ) (ρ ↣ (ρ ↣ 0 ↣ ρ) ↣ 0 ↣ ρ)
 
 notation env " ⊢ʷᵗ " t " : " ρ:max => WellTyped env t ρ
 
@@ -127,7 +127,7 @@ def inferType : Environment → Term → Option FiniteType
   | env, successor => some (FiniteType.zero ↣ FiniteType.zero)
   | env, kcomb ρ σ => some (ρ ↣ σ ↣ ρ)
   | env, scomb ρ σ τ => some ((ρ ↣ σ ↣ τ) ↣ (ρ ↣ σ) ↣ ρ ↣ τ) 
-  | env, recursorOne ρ => some $ recursorOneExpend ρ
+  | env, recursorOne ρ => some $ (ρ ↣ (ρ ↣ 0 ↣ ρ) ↣ 0 ↣ ρ)
   
 
 
